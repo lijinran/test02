@@ -1,0 +1,74 @@
+<!--
+@require "exchange-call.js"
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>兑换福利</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="result-public exchange-calls longyearbg" :style="{ height: screenH + 'px' }">
+        <!--话费-->
+        <br>
+        <div class="exchange-ticket text-center clearfix" v-cloak>
+            <div class="img">
+                <img class="ico-class " :src="prizePic" alt="" v-if="prizePic !=0">
+                <img class="ico-class" src="default.png" alt="" v-else>
+            </div>
+            <p class="exchange-ticket-name text-center color1" v-if="prizeName != 0">{{prizeName}}</p>
+            <p class=" colorfff">消耗福利卡：{{cardNum}}</p>
+            <!-- 输入手机号 -->
+
+            <div class="main-content fn-mt10" v-cloak>
+                <div class="inputBox input-phone">
+                    <!-- <span class="icon pull-left"><img src="phone.png" alt=""></span> -->
+                    <input type="tel" maxlength="11" placeholder="请输入手机号" autocomplete="off" v-model="phone" class="pull-left" name="phone" v-on:blur="checkPhone">
+                </div>
+                <div class="inputBox input-phone">
+                    <!-- <span class="icon pull-left"><img src="phone.png" alt=""></span> -->
+                    <input type="tel" maxlength="11" placeholder="请输入手机号" autocomplete="off" v-model="rephone" class="pull-left" name="rephone" v-on:blur="checkPhone">
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="exchange-ticket-btn text-center fn-mt10" @click="exchangeFun">
+                确定信息并兑换
+            </div>
+        </div>
+
+        <transition name="popin">
+            <!-- 显示对兑换成功 -->
+            <div id="Point" class="bind-phone ui-dialog" v-show="isShowPoint" style="display:none; z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center">{{isShowPointTxt}}</h2>
+                    </div>
+                    <div class="main-footer" @click="gotoURL('ucenter')">
+                        <button type="submit" class="btn">查看礼品</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- 蒙版层 -->
+        <transition name="fade">
+            <div class="ui-mask" v-show="showMask"></div>
+        </transition>
+        <!-- <div class="exchange-ticket-explain">
+            礼品说明 :
+            <div v-html="comment"></div>
+        </div> -->
+
+
+    </div>
+</body>
+
+</html>

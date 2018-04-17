@@ -1,0 +1,36 @@
+<!--
+@require "exchange-ticket.js"
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>兑换福利</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="result-public " :style="{ height: screenH + 'px' }">
+        <!--卡券-->
+        <div class="exchange-ticket text-center exchange-ticketBg" v-cloak>
+            <div class="img">
+                <img class="ico-class " :src="prizePic" alt="" v-if="prizePic !=0">
+                <img class="ico-class" src="default.png" alt="" v-else>
+            </div>
+            <p class="exchange-ticket-name text-center color1" v-if="prizeName != 0">{{prizeName}}</p>
+        </div>
+
+        <div class="exchange-ticket-explain">
+            礼品说明 :
+            <div v-html="comment"></div>
+        </div>
+        <div class="exchange-ticket-btn text-center" @click="exchangeFun">
+            确定信息并兑换
+        </div>
+
+    </div>
+</body>
+
+</html>

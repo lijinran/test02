@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>不在活动区域</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        .loading {
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 152px;
+            height: 62px;
+            text-align: center;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loading">
+        <!--<img src="loading.gif" alt="">-->
+        不在活动区域..<br/>
+        <a href="#" id="padlockFnc">返回</a>
+    </div>
+
+    <script>
+        //隐藏微信右上角的分享  
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+            //通过下面这个API显示右上角按钮
+            WeixinJSBridge.call('hideOptionMenu');
+        });
+
+        var padlockFnc = document.getElementById('padlockFnc');
+
+        padlockFnc.addEventListener('touchstart', function (evt) {
+            var ua = navigator.userAgent.toLowerCase();
+            if (ua.match(/MicroMessenger/i) == "micromessenger") {
+                WeixinJSBridge.call('closeWindow');
+            } else {
+                evt.preventDefault();
+                window.history.back();
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>

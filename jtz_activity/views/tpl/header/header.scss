@@ -1,0 +1,15 @@
+@charset "utf-8";
+$width:100%;
+$width1200:1200px;
+$mainbg:#5873A8;
+$hcolor:#F7F8FA;
+$mgauto:0 auto;
+$left:left;
+$right:right;
+.left {
+    float: $left
+}
+
+.right {
+    float: $right
+}

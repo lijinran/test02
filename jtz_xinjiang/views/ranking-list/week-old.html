@@ -1,0 +1,134 @@
+<!--
+@require "week-old.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>往期回顾</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="main draw-content" :style="{ height: screenH + 'px' }">
+        <!-- <div class="draw-header">
+            <vue-marquee :scroll-win="scrollWin" :time-text="timeText"></vue-marquee>
+            <div class="clearfix"></div>
+        </div> -->
+        <div class="nullLine">&nbsp;</div>
+        <div class="prizeList" v-cloak>
+            <!-- <div class="ranking-title">金天子{{thisCity}}扫码排行榜</div> -->
+            <div class="ranking-tipbar">
+                <p class="ranking-tipbar-title">● 金天子扫码周冠军往期回顾 ●</p>
+            </div>
+
+            <div class="ranking-list-content oldweek">
+                <!--排行榜-->
+                <!-- <ul class="">
+                    <li v-for="item in rankList">
+
+                        <span class="list-table-call list-num" v-if="item.rankNo =='NO.1'">
+                                <img src="no1.png" alt="" class="list-noimg">    
+                         </span>
+                        <span class="list-table-call list-num" v-else-if="item.rankNo =='NO.2'">
+                                <img src="no2.png" alt="" class="list-noimg">    
+                         </span>
+                        <span class="list-table-call list-num" v-else-if="item.rankNo =='NO.3'">
+                                <img src="no3.png" alt="" class="list-noimg">    
+                         </span>
+                        <span class="list-table-cell list-num " :class="{color1:item.curRed == 1}" v-else>{{item.rankNo}}</span>
+
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left">
+                                <img :src="item.headImgUrl" alt="头像" v-if="item.headImgUrl !=''">
+                                <img src="../exchange-welfare/default.png" alt="头像" v-else>
+                            </div>
+                            <div class="times-div left"><span class="name">{{item.nickname}}</span><span class="time">更新时间:{{item.utime | format }}</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight" :class="{color1:item.curRed == 1}">{{item.checkNum}}包</span>
+                    </li>
+
+
+                </ul> -->
+                <!-- itemDiv start -->
+                <div class="itemDiv" v-for="item in rankList">
+                    <div class="orderDiv">
+                        <span class="titleBg">第{{item.turnNum}}期</span>
+                        <span class="info">{{item.turnDate}}</span>
+                    </div>
+                    <div class="orderInfo">
+                        <div class="avator-wrap">
+                            <div class="avator-first">
+                                <img src="no1.png" alt="">
+                            </div>
+                            <div class="avator-img">
+                                <img :src="item.headImgUrl" alt="">
+                            </div>
+                            <div class="avator-float">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="info">
+                            <p>{{item.nickname}}</p>
+                            <p>扫码包数：<span class="color3">{{item.checkNum}}</span></p>
+                        </div>
+                        <div class="btn" v-if="item.curRed == 1 && item.isGet ==0" @click="goGetAward(item)">
+                            领取周冠军礼品
+                        </div>
+                        <div class="btn btn-off" v-if="item.curRed == 1 && item.isGet ==1">
+                            已经领取
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!--itemDiv end  -->
+                <!-- <div class="itemDiv">
+                    <div class="orderDiv">
+                        <span class="titleBg">第一期</span>
+                        <span class="info">10.8-10.14</span>
+                    </div>
+                    <div class="orderInfo">
+                        <div class="avator-wrap">
+                            <div class="avator-first">
+                                <img src="no1.png" alt="">
+                            </div>
+                            <div class="avator-img">
+                                <img src="head-portrait.jpg" alt="">
+                            </div>
+                            <div class="avator-float">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="info">
+                            <p>dd</p>
+                            <p>扫码包数：<span class="color3">123</span></p>
+                        </div>
+                        <div class="btn">
+                            领取周冠军礼品
+                        </div>
+
+                    </div>
+
+                </div> -->
+                <!--itemDiv end  -->
+                <br>
+
+
+            </div>
+
+
+
+        </div>
+        <!-- <div class="menuFooter-nav rank-nav" v-cloak>
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div> -->
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+<!--
+@require "exchange-result.js"
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>兑换福利</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="result-public" :class="{matterResult:styleBg ==1 && !isExchangeOK,ticketResultExc: styleBg ==2,successful:isExchangeOK}" :style="{ height: screenH + 'px' }">
+        <div class="result-content" v-cloak>
+            <div class="result-text">
+                <p v-if="isExchangeOK" style="color:#443731;">您已成功领取</p>
+                <p v-if="prizeName != 0 && styleBg ==1">{{prizeName}}</p>
+
+            </div>
+
+            <!--实物-->
+            <div class="matter-content" v-if="styleBg ==1">
+                <p class="text-center" :class="{'successful-tip':isExchangeOK}" v-if="isExchangeOK && isSmoke">亲，礼品将在7天内为您送达</p>
+                <p class="text-center" :class="{'successful-tip':isExchangeOK}" v-if="isExchangeOK && !isSmoke">亲，礼品将由京东平台尽快为您送达</p>
+                <img class="ico-class" :src="prizePic" alt="" v-if="prizePic !=0 ">
+
+                <img class="ico-class" src="default.png" alt="" v-else>
+                <!--<div class="getting-explain">
+                    <div class="explain-btn">
+                        <span>微信红包领取说明</span>
+                        <span @click="toggleFun">{{jiantou?'＞':'∨'}}</span>
+                    </div>
+                    <div v-if="!jiantou">
+                        <img src="../result/shuoming.png" alt="">
+                    </div>
+                </div>-->
+            </div>
+            <!--实物-->
+            <!--卡券-->
+            <div class="ticketExc-content text-center" v-if="styleBg ==2">
+                <!--<p>1张福利卡片可任意兑换1张卡券</p>-->
+                <img class="ico-class" :src="prizePic" alt="" v-if="prizePic !=0">
+                <img class="ico-class" src="default.png" alt="" v-else>
+                <p v-if="prizeName != 0" class="ticket-tishi">{{prizeName}}</p>
+
+                <div class="ext" v-if="couponCode != 0">
+                    卷码(长按以下数字复制)
+                    <p> {{couponCode}} </p>
+                </div>
+
+            </div>
+            <!--卡券 end-->
+            <!-- 地址输入框 -->
+            <div class="down-content" v-if="!isExchangeOK && styleBg ==1">
+                <h2 class="text-center"><img src="area.png" alt="">请填写收货地址信息</h2>
+
+                <div class="inputBox input-username">
+                    <input type="text" placeholder="收货人" maxlength="20" class="pull-left" v-model.trim="contacts">
+                </div>
+                <div class="inputBox input-phone">
+                    <input type="tel" maxlength="11" autocomplete="off" placeholder="联系电话" class="pull-left" v-model.trim="contactsPhone" v-on:blur="checkPhone" name="contactsPhone">
+                </div>
+                <div class="inputBox input-province">
+                    <vue-area :province="province" :city="city" :county="area" @onchange="change"></vue-area>
+                </div>
+                <div class="inputBox input-address">
+                    <input type="text" placeholder="详细地址" maxlength="120" class="pull-left" v-model.trim="address">
+                </div>
+
+                <div class="inputBtn text-center" @click="doSubmit" v-if="!form">
+                    提交并确认兑换
+                </div>
+                <div class="inputBtn text-center" @click="doSubmit" v-else>
+                    提交并确认
+                </div>
+
+
+            </div>
+            <!-- 卡劵 说明 -->
+            <div class="down-content _right card-content" v-if="styleBg==2">
+
+                <div class="useTime">
+                    有效使用日期 :<br/> {{dateValidFrom | format}} 至 {{dateValidTo | format}}
+                </div>
+
+                <!-- 使用说明-->
+                <p class="text-left">使用规则:
+                    <span class="right" @click="showComment"> 
+                        <img src="arrows.png" alt="" v-if="!isShowComment">
+                        <img src="arrows_down.png" style="width:0.5rem" alt="" v-else>
+                        </span>
+                </p>
+                <transition name="popin">
+                    <div class="useExplain" v-html="comment" v-show="isShowComment"></div>
+                </transition>
+                <div class="inputBtn text-center extUrl" :class="{'successful-btn':isExchangeOK}" @click="gotoExt()">
+                    去使用
+                </div>
+
+
+            </div>
+            <!-- 卡劵 说明 end-->
+            <div class="down-content" v-if="isExchangeOK">
+                <br/>
+                <div class="inputBtn text-center" :class="{'successful-btn':isExchangeOK}" @click="goto('ucenter')">
+                    查看礼品
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!--<div class="menuFooter-nav">
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div>-->
+    </div>
+</body>
+
+</html>

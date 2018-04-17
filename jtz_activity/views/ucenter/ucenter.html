@@ -1,0 +1,194 @@
+<!--
+@require "ucenter.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>我的礼品</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="main draw-content" :style="{ height: screenH + 'px' }">
+        <div class="draw-header">
+            <vue-marquee :scroll-win="scrollWin" :time-text="timeText"></vue-marquee>
+            <div class="clearfix"></div>
+        </div>
+        <div class="prizeList newyearbg" v-cloak>
+            <div class="ucenter-message">
+                <div class="message-left left">
+                    <div class="head-portrait"><img :src="userpic" alt=""></div>
+                    <p class="ucenter-name colorfff" v-if="nickname != 0">{{nickname}}</p>
+                    <p class="ucenter-name colorfff" v-else>未知</p>
+                </div>
+                <div class="message-right left colorfff">
+                    <p>电话号码：{{userphone}}<span v-show="!userphone">未激活</span></p>
+                    <p>福利卡：{{cqJnkpValue}}张</p>
+                </div>
+                <div class="deactivation right colorfff" v-show="!userphone" v-cloak @click="doBindPhone">
+                    <img src="qujihuo.png" alt=""></div>
+                <!--去激活-->
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+            <!--切换卡-->
+            <div class="cut-btn">
+                <div class="cut-btn-left left" :class="{cutBtnGray:isActive}" @click="tabChange(1)">未领取</div>
+                <div class="cut-btn-right right" :class="{cutBtnGray:!isActive}" @click="tabChange(2)">已领取</div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+            <!--奖品列表-->
+            <div class="prize-mian">
+                <!--未领取-->
+                <ul v-if="!isActive">
+                    <li v-for="el in weiList" v-if="weiList != ''">
+                        <div class="prize-left left">
+                            <img :src="el.logo_url" class="left" alt="" v-if="el.logo_url">
+                            <img src="../exchange-welfare/default.png" class="left" alt="" v-if="!el.logo_url">
+                            <div class="left colorfff">
+                                <p>{{el.prize_name}}</p>
+                                <p class="time">获得时间:{{el.ctime | format}}</p>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="prize-right right" @click="getPrizeFun(el)">
+                            领取
+                        </div>
+                        <div class="clearfix"></div>
+                    </li>
+                    <li v-if="weiList == ''" class="text-center colorfff">
+                        暂无记录
+                    </li>
+                    <li v-show="tab1More && weiList != ''" class="text-center colorfff" @click="getTabMore(1)">
+                        加载更多
+                    </li>
+                    <!--<li>
+                    <div class="prize-left left">
+                        <img src="redPacket.png" class="left" alt="">
+                        <div class="left">
+                            <p>微信红包2.18元</p>
+                            <p class="time">获得时间：2017/5/23 10:12</p>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="prize-right right">
+                        领取
+                    </div>
+                    <div class="clearfix"></div>
+                </li>-->
+                </ul>
+                <!--已领取-->
+                <ul v-if="isActive">
+                    <li v-for="el in yiList" v-if="yiList != ''">
+                        <div class="prize-left left">
+                            <div class="left" v-if="el.src_type==3301">
+                                <i></i>
+                                <img :src="el.logoUrl" class="left" alt="" v-if="el.logoUrl">
+                                <img src="../exchange-welfare/default.png" class="left" alt="" v-else>
+                            </div>
+                            <div style=" display: inline;" v-if="el.src_type!=3301">
+                                <img :src="el.logoUrl" class="left" alt="" v-if="el.logoUrl">
+                                <img src="../exchange-welfare/default.png" class="left" alt="" v-else>
+                            </div>
+                            <div class="left colorfff">
+                                <p>{{el.name}}</p>
+                                <p class="time colorfff">获得时间:{{el.ctime | format}}</p>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="prize-right right" @click="getDetails(el)" v-if="el.type==1304||el.type==1316">
+                            详情
+                        </div>
+                        <div class="clearfix"></div>
+                    </li>
+                    <li v-if="yiList == ''" class="text-center colorfff">
+                        暂无记录
+                    </li>
+                    <li v-show="tab2More && yiList != ''" class="text-center colorfff" @click="getTabMore(2)">
+                        加载更多
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+        <!-- 弹窗 绑定手机号-->
+        <transition name="popin">
+            <div id="bind-phone" class="bind-phone ui-dialog" v-show="showPhone" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-top">
+                        <img src="../draw/popUpTop.png" alt="">
+                    </div>
+                    <div class="main-content">
+                        <h2 class="text-center">首次领取,请先激活手机号码</h2>
+                        <p class="text-center" style="color:#62615F;">*重庆中烟活动通用</p>
+                        <div class="inputBox input-phone sjBg">
+                            <!--<span class="icon pull-left"><img src="phone.png" alt=""></span>-->
+                            <input type="tel" maxlength="11" placeholder="请输入领取的手机号" v-model="phone" class="pull-left">
+                        </div>
+                        <div class="inputBox input-code dxBg">
+                            <!--<span class="icon pull-left"><img src="code.png" alt=""></span>-->
+                            <input type="tel" maxlength="6" placeholder="请输入短信验证码" v-model="code" class="pull-left">
+                            <button class="getcode" @click="getCode" id="getCode">获取验证码</button>
+                        </div>
+                    </div>
+                    <div class="main-footer" @click="bindPhoneFun(1)" v-if="isGetPrize">
+                        <!--绑定后领奖-->
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-footer" @click="bindPhoneFun(0)" v-if="!isGetPrize">
+                        <!--绑定后刷新-->
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <!-- 实物 -->
+        <transition name="popin">
+            <div id="bind-address" class="bind-phone ui-dialog" v-show="showAddress" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-top">
+                        <img src="../draw/popUpTop.png" alt="">
+                    </div>
+                    <div class="main-content">
+                        <h2 class="text-center">请填写收货地址信息</h2>
+                        <div class="inputBox input-phone lxrBg">
+                            <input type="text" placeholder="收货人" maxlength="20" v-model="contacts" class="pull-left">
+                        </div>
+                        <div class="inputBox input-phone sjBg">
+                            <input type="tel" maxlength="11" placeholder="联系电话" v-model="contactsPhone" class="pull-left">
+                        </div>
+                        <div class="inputBox input-area">
+                            <vue-area :province="deliveryProvince" :city="deliveryCity" :county="deliveryArea" @onchange="change"></vue-area>
+                        </div>
+                        <div class="inputBox input-phone addBg">
+                            <input type="text" placeholder="详细地址" maxlength="100" v-model="address" class="pull-left">
+                        </div>
+                    </div>
+                    <div class="main-footer" @click="getKindFun">
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <!-- 蒙版层 -->
+        <transition name="fade">
+            <div class="ui-mask" v-show="showMask"></div>
+        </transition>
+        <div class="menuFooter-nav rank-nav" v-cloak>
+            <img src="../draw/prizeFooterBg.png" class="prizeFooterBg" alt="">
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div>
+    </div>
+
+</body>
+
+</html>

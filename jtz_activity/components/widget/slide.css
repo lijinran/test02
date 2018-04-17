@@ -1,0 +1,48 @@
+.banner-wrap {
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-ul {
+    position: relative;
+    -webkit-transition: -webkit-transform 0.3s ease;
+    -webkit-transform: translate3d(0, 0, 0)
+}
+
+.banner-ul>li {
+    position: relative;
+    float: left
+}
+
+.banner-word {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff
+}
+
+.banner-num {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    height: 10px;
+    overflow: hidden
+}
+
+.banner-num>a {
+    float: left;
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    border-radius: 5px;
+    background-color: #cacaca;
+    line-height: 1
+}
+
+.banner-num>a.active {
+    background-color: #fff;
+}

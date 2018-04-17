@@ -1,0 +1,3 @@
+src_common/node_modules/*
+.vscode/*
+.git/*

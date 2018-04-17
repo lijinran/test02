@@ -1,0 +1,67 @@
+<!--
+@require "result.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>天子礼 惠全城</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="result-public" :class="{kindResult:styleBg ==1,redpacketResult:styleBg ==2,ticketResult: styleBg ==3}" :style="{ height: screenH + 'px' }">
+        <div class="result-content" v-cloak>
+            <div class="result-text colorfff">
+                <p v-if="styleBg ==1">您已成功领取</p>
+                <p v-else>恭喜获得</p>
+                <p>{{prizeName}}</p>
+            </div>
+            <!--实物-->
+            <div class="kind-content colorfff " v-if="styleBg ==1">
+                <p v-if="isSmoke">亲，礼品将在7天内为您送达</p>
+                <p v-else>亲，礼品将由京东平台尽快为您送达</p>
+                <img :src="logoUrl" alt="">
+            </div>
+            <!--红包-->
+            <div class="redpacket-content" v-if="styleBg ==2">
+                <p class="tishi-text">红包已经成功领取</p>
+                <img class="ico-class" src="redpacket-ico.png" alt="">
+                <p class="money-text">{{prizeValue}}</p>
+                <div class="getting-explain">
+                    <div class="explain-btn">
+                        <span>微信红包领取说明</span>
+                        <!--<span @click="toggleFun">{{jiantou?'＞':'∨'}}</span>-->
+                    </div>
+                    <div>
+                        <!--v-if="!jiantou"-->
+                        <img src="shuoming.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <!--卡券-->
+            <div class="ticket-content" v-if="styleBg ==3">
+                <p class="ticket-tishi colorfff">1张福利卡可任意兑换1张卡券</p>
+                <div class="ticket-list">
+                    <ul>
+                        <li v-for="(el,index) in array" @click="doExchangeCard(el)" v-if='index<4'>
+                            <div class="gift-img"><i></i><img :src="el.logoUrl" alt=""></div>
+                            <P>{{el.name}}</P>
+                        </li>
+                        <div class="clearfix"></div>
+                    </ul>
+                </div>
+                <div class="ticket-more" @click="moreFun"><img src="morexz.png" alt=""></div>
+            </div>
+        </div>
+        <div class='result-fixed-div'>
+            <div class="menuFooter-nav">
+                <img src="../draw/prizeFooterBg.png" class="prizeFooterBg" alt="">
+                <vue-navmenu :is-flag="isflag"></vue-navmenu>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+@import "../../components/common/mixins.scss";
+.ucenter-message {
+    width: 100%;
+    height: pxToRem(140);
+    color: #42382F;
+    .message-left {
+        width: 27%;
+        margin: pxToRem(18) 0;
+        .head-portrait {
+            width: pxToRem(80);
+            height: pxToRem(80);
+            margin: 0 auto;
+            img {
+                border-radius: 50%;
+            }
+        }
+        .ucenter-name {
+            text-align: center;
+            height: pxToRem(25);
+            line-height: pxToRem(25);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+    }
+    .message-right {
+        margin: pxToRem(35) 0 0;
+        p {
+            height: pxToRem(25);
+            line-height: pxToRem(25)
+        }
+    }
+}
+
+%cut-btn {
+    height: pxToRem(30);
+    line-height: pxToRem(30);
+    width: 50%;
+    text-align: center;
+    color: #EFBD80;
+}
+
+.cut-btn {
+    background: #C70D25;
+    width: 100%;
+    padding: pxToRem(5) 0;
+    .cut-btn-left {
+        border-right: 1px solid #AB1D2B;
+        @extend %cut-btn;
+    }
+    .cut-btn-right {
+        @extend %cut-btn;
+    }
+}
+
+.cutBtnGray {
+    color: #D3654E!important;
+}
+
+.prize-mian {
+    width: 92%;
+    margin: 0 auto pxToRem(50); // height: pxToRem(350); // overflow-y: auto;
+    // -webkit-overflow-scrolling: touch;
+    ul {
+        width: 100%;
+        li {
+            padding: pxToRem(15) 0;
+            border-bottom: 1px solid #F7A099;
+            .prize-left {
+                color: #42382F;
+                img {
+                    width: pxToRem(60);
+                    margin-right: pxToRem(5);
+                }
+                div {
+                    margin-top: pxToRem(8)
+                }
+                .time {
+                    font-size: 12px;
+                }
+            }
+            .prize-right {
+                width: pxToRem(70);
+                background: #F0C485;
+                text-align: center;
+                border-radius: 5px;
+                color: #841422;
+                padding: pxToRem(2) 0;
+                margin-top: pxToRem(10);
+            }
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
+.newyearbg {
+    background: url("newyearbg.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+.longyearbg {
+    background: url("longyearbg.png") no-repeat;
+    background-size: 100% 100%;
+}
+.changbg {
+    position: fixed;
+    overflow: auto;
+    width: 100%;
+}
+
+// fix iphone4
+@media (max-height: 480px) {
+    .prize-mian {
+        // height: pxToRem(250)!important;
+    }
+    .prizeList {
+        height: inherit!important;
+    }
+}

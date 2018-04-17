@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <title>提示</title>
+
+    <style>
+        .field-tooltipWrap {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            z-index: 19891014;
+        }
+
+        .field-tooltipInner {
+            pointer-events: none;
+            display: table;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .field-tooltip {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .field-tooltip .field-invalidmsg,
+        .field-tooltip .field-validmsg {
+            color: #fff;
+        }
+
+        .field-tooltip .zvalid-resultformat {
+            display: inline-block;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+            pointer-events: auto;
+            animation-name: fieldTipBounceIn;
+            -webkit-animation-name: fieldTipBounceIn;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            -webkit-animation-duration: .18s;
+            animation-duration: .18s;
+        }
+
+        @-webkit-keyframes fieldTipBounceIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale3d(.3, .3, .3);
+                transform: scale3d(.3, .3, .3);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="message"></div>
+
+    <!-- config 配置 -->
+    <script src="config.js?v=2017"></script>
+    <script>
+        //隐藏微信右上角的分享  
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+            //通过下面这个API显示右上角按钮
+            WeixinJSBridge.call('hideOptionMenu');
+        });
+        // 清理数据
+        removeItems(['winId', 'prizeName', 'prizeType', 'prizeValue'], true);
+
+        // 存Barcode 参数
+        var barcode = window.location.search.replace('?', '');
+        window.sessionStorage.setItem("barcode", barcode);
+
+
+        // 一些参数
+        var off = false,
+            projecty = window.localStorage.getItem('project'),
+            userToken = window.localStorage.getItem(projecty + 'wxLogin'),
+            longitude = '',
+            latitude = '',
+            cip = '',
+            options = {
+                enableHighAccuracy: true,
+                maximunAge: 1000,
+                timeout: 2000
+            };
+        userToken && (userToken = JSON.parse(userToken));
+        userToken = userToken && userToken.userToken;
+
+
+        if (userToken) {
+            //消除本地缓存(消除一些扫码后干扰的数据)
+
+            window.location.href = "./wxLogin.html?" + "from=" + Math.random();
+            // return false;
+        } else {
+            checkWX()
+        }
+
+        function getMessage(text) {
+            var message = document.getElementById('message'),
+                container =
+                '<div class="field-tooltipWrap"><div class="field-tooltipInner"><div class="field-tooltip fieldTipBounceIn"><div class="zvalid-resultformat">' +
+                text + '</div></div></div></div>';
+            message.innerHTML = container;
+            setTimeout(function () {
+                message.innerHTML = '';
+            }, 1500)
+        }
+
+        // 
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return (r[2]);
+            return '';
+        }
+
+
+
+        //设置本地返回值缓存
+        function setItems(items, obj, flag) {
+            for (var k in items) {
+                if (items.hasOwnProperty(k)) {
+                    if ('object' === typeof (items[k])) {
+                        setItems(items[k], obj, flag);
+                        return false;
+                    }
+                    setItem('_' + k + '_', items[k], obj, flag);
+                }
+            }
+        }
+
+        function setItem(key, val, obj, flag) {
+            !flag ? window[obj].setItem(key, val) : Cookie(key, val);
+        }
+
+        function removeItems(keys, flag) {
+            //重置
+            if (flag) {
+                reset();
+                return false;
+            }
+
+            //移除
+            if ('[object Array]' === toString.call(keys)) {
+                for (var i = 0, len = keys.length; i < len; ++i) {
+                    removeItem(keys[i]);
+                }
+            } else {
+                removeItem(keys[i]);
+            }
+
+        }
+
+        function removeItem(key) {
+            var key = '_' + key + '_';
+            window.localStorage.removeItem(key);
+            window.sessionStorage.removeItem(key);
+            Cookie(key, null);
+        }
+
+        function reset() {
+            /* S-吉林*/
+            var loddproject = window.localStorage.getItem('project'),
+                lodduserToken = window.localStorage.getItem(loddproject + 'wxLogin'),
+                lodditemcomId = window.localStorage.getItem(loddproject + 'comId'),
+                lodduserwxInfo = window.localStorage.getItem(loddproject + 'wxInfo'),
+                lodditemphone = window.localStorage.getItem(loddproject + 'phone');
+            /* E-吉林*/
+
+            window.localStorage.clear();
+            window.sessionStorage.clear();
+            //重新
+            /* S-吉林 */
+            (loddproject && '' !== loddproject && 'null' !== loddproject) && window.localStorage.setItem('project',
+                loddproject);
+            (lodduserToken && '' !== lodduserToken && 'null' !== lodduserToken) && window.localStorage.setItem(
+                loddproject + 'wxLogin', lodduserToken);
+            (lodduserwxInfo && '' !== lodduserwxInfo && 'null' !== lodduserwxInfo) && window.localStorage.setItem(
+                loddproject + 'wxInfo', lodduserwxInfo);
+            (lodditemcomId && '' !== lodditemcomId && 'null' !== lodditemcomId) && window.localStorage.setItem(
+                loddproject + 'comId', lodditemcomId);
+            (lodditemphone && '' !== lodditemphone && 'null' !== lodditemphone) && window.localStorage.setItem(
+                loddproject + 'phone', lodditemphone);
+            /* E-吉林*/
+
+        }
+        //是否为对象
+        function isObject(val) {
+            return '[object Object]' == toString.call(val);
+        }
+        //处理document.cookie
+        function Cookie(key, value, options) {
+            if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value === null ||
+                    value === undefined)) {
+                options = options || {};
+                if (value === null || value === undefined) {
+                    options.expires = -1;
+                }
+                if (typeof options.expires === 'number') {
+                    var days = options.expires,
+                        t = options.expires = new Date();
+                    t.setDate(t.getDate() + days);
+                }
+                value = String(value);
+                return (document.cookie = [encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
+                    options.expires ? '; expires=' + options.expires.toUTCString() : '', options.path ?
+                    '; path=' + options.path : '', options.domain ? '; domain=' + options.domain : '', options.secure ?
+                    '; secure' : ''
+                ].join(''));
+            }
+            options = value || {};
+            var decode = options.raw ? function (s) {
+                return s;
+            } : decodeURIComponent;
+            var pairs = document.cookie.split('; ');
+            for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
+                if (decode(pair[0]) === key)
+                    return decode(pair[1] || '');
+            }
+            return null;
+        }
+
+
+        // 验真微信
+        function checkWX() {
+            var wappId = window.config.wappId;
+            var hosturl = (location.origin || (location.protocol + '//' + location.hostname));
+            // wredirectUri = "`${window.th.Domain}?${hosturl}${window.th.callPage}`";
+            var wredirectUri = window.config.Domain + "?" + hosturl + window.config.callPage;
+
+            // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${wappId}&redirect_uri=${wredirectUri}&response_type=code&scope=snsapi_userinfo&state=#wechat_redirect`;
+            window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + wappId +
+                "&redirect_uri=" + wredirectUri + "&response_type=code&scope=snsapi_userinfo&state=#wechat_redirect";
+            return false;
+        }
+    </script>
+
+</body>
+
+</html>

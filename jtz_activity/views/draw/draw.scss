@@ -1,0 +1,579 @@
+@import "../../components/common/mixins.scss";
+.activeTime {
+    text-align: center;
+    color: #F6E3A8;
+    background: #CE0C02;
+    display: inline-block;
+    margin: 20% 20% 8%;
+    width: 60%;
+    font-size: 12px;
+    img {
+        display: inline;
+        margin-right: pxToRem(2);
+        width: pxToRem(11);
+        vertical-align: middle;
+    }
+}
+
+.draw-banner {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    span {
+        flex: 1; // display: block;
+        height: pxToRem(60);
+    }
+    .rule,
+    .share {
+        height: pxToRem(60);
+        img {
+            height: 100%; // background-size: 80% 80%;
+        }
+    }
+    .rule {
+        img {
+            text-align: right;
+            margin-left: pxToRem(10);
+        }
+    }
+    .title {
+        flex: 7;
+        img {
+            height: 100%;
+        }
+    }
+}
+
+.jumpLink {
+    max-width: 65%;
+    margin: pxToRem(6) auto pxToRem(6);
+    line-height: pxToRem(21);
+    text-align: center;
+    padding: 0.2rem 0;
+    color: #EBC08D;
+    font-size: pxToRem(13);
+    background: url("juxingbg.png") no-repeat;
+    background-size: 100% 100%;
+    @extend %keepline;
+    img {
+        display: inline;
+        width: pxToRem(8);
+        vertical-align: middle;
+    }
+}
+
+.tellPhone {
+    position: absolute;
+    margin-top: pxToRem(8);
+    width: 100%;
+    background: url("lr-bg.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+.draw-content {
+    background: #BB0106 url("Bg.jpg") no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .draw-header {
+        width: 100%;
+        height: 30px;
+        background: #FFDE00;
+    }
+    .prizeList {
+        flex: 1;
+        // height: calc(100% - 85px);
+    }
+    .prizeList-draw {
+        flex: 1;
+        background: #BB0106 url("content-bg.jpg") no-repeat;
+        background-size: 100% 100%;
+        height: calc(100% - 95px);
+    }
+    .draw-titleText {
+        width: 88%;
+        margin: pxToRem(12) auto pxToRem(8);
+    }
+    .draw-time {
+        text-align: center
+    }
+    .draw-rule {
+        border: 1px solid #B865D1;
+        padding: 0.03rem;
+        width: 25%;
+        text-align: center;
+        margin: 0.2rem auto;
+        font-style: italic;
+    }
+    .draw-tell {
+        width: 50%;
+        text-align: center;
+        padding: 3px;
+    }
+    .draw-lottery {
+        width: 88%;
+        height: 68%;
+        margin: 0 auto;
+        position: relative;
+        z-index: 8;
+        ul {
+            width: 100%;
+            height: 100%;
+            padding-left: 0;
+            li {
+                float: left;
+                width: 31%;
+                height: 31%;
+                margin: 0 3% 3% 0;
+                figure {
+                    position: relative;
+                    -webkit-transform-style: preserve-3d;
+                    transform-style: preserve-3d;
+                    -webkit-transition: 1s transform;
+                    transition: 1s transform;
+                    margin: 0;
+                    height: 100%;
+                    img.beijingImg {
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .front-div {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        top: 0;
+                        background: url("fanpaiZhengBg.png") no-repeat;
+                        background-size: 100% 100%;
+                        -webkit-transition: 1s .2s opacity;
+                        transition: 1s .2s opacity;
+                        .logoUrl-img {
+                            width: pxToRem(50);
+                            height: pxToRem(56);
+                            margin: pxToRem(8) auto pxToRem(4);
+                        }
+                        p {
+                            text-align: center;
+                            font-size: 12px;
+                            line-height: 1.1;
+                        }
+                    }
+                }
+            }
+            li:nth-child(3n+0) {
+                margin: 0;
+            }
+            li.activeNow figure,
+            li.borderRed figure {
+                -webkit-transform: rotateY(.5turn);
+                transform: rotateY(.5turn);
+            }
+            li.borderRed figure .front-div {
+                opacity: 1;
+                -webkit-transform: rotateY(.5turn) translateZ(1px);
+                transform: rotateY(.5turn) translateZ(1px);
+                border: 1px solid red;
+                border-radius: 5px;
+            }
+            li.activeNow figure .front-div {
+                opacity: 1;
+                -webkit-transform: rotateY(.5turn) translateZ(1px);
+                transform: rotateY(.5turn) translateZ(1px);
+            }
+        }
+    }
+}
+
+.opacity0 {
+    opacity: 0
+}
+
+.opacity1 {
+    opacity: 1
+}
+
+.start-Li {
+    margin: 1.5rem 0 0;
+    div {
+        font-size: 13px;
+        text-align: center;
+    }
+    img {
+        width: 96%;
+        margin: 0 auto
+    }
+}
+
+.menuFooter-nav {
+    width: 100%;
+    height: pxToRem(65);
+    position: relative;
+    z-index: 90;
+    .navMenu-div {
+        background: #BB0106;
+        padding: pxToRem(4) 0;
+    }
+    ul {
+        width: 100%;
+        display: flex;
+        display: -webkit-flex;
+        padding-left: 0;
+        margin-top: 5px;
+        li {
+            float: left;
+            flex: 1;
+            background: #BB0106;
+            text-align: center;
+            img {
+                width: 16%;
+                margin: 0 auto;
+            }
+            p {
+                font-size: pxToRem(13);
+                color: #EBC08D;
+                margin-top: 2px;
+            }
+        }
+    }
+}
+
+.menuFooter-nav-draw {
+    width: 100%;
+    // background: #BB0106;
+    height: pxToRem(65);
+    position: relative;
+    z-index: 90;
+    .prizeFooterBg {
+        // background: #BB0106;
+    }
+    .navMenu-div {
+        background: #BB0106;
+        padding: pxToRem(4) 0;
+    }
+    ul {
+        width: 100%;
+        display: flex;
+        display: -webkit-flex;
+        padding-left: 0;
+        margin-top: 5px;
+        li {
+            float: left;
+            flex: 1;
+            background: #BB0106;
+            text-align: center;
+            img {
+                width: 16%;
+                margin: 0 auto;
+            }
+            p {
+                font-size: pxToRem(13);
+                color: #EBC08D;
+                margin-top: 2px;
+            }
+        }
+    }
+}
+
+.isActive {
+    color: #FFCA11!important;
+}
+
+.fontSize13 {
+    font-size: 13px;
+}
+
+.checkbox-input {
+    margin: pxToRem(16) auto;
+    color: #CEB185;
+}
+
+#check_css3 {
+    margin: 20px auto;
+}
+
+#check_css3 p {
+    position: relative;
+    font-size: pxToRem(14);
+    display: inline-block;
+}
+
+#check_css3 p span {
+    position: relative;
+    top: -2px;
+}
+
+#check_css3 .input_check {
+    position: absolute;
+    visibility: hidden;
+}
+
+#check_css3 .input_check+label {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #D4A360;
+    margin-right: 10px;
+}
+
+#check_css3 .input_check:checked+label:after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    bottom: 12px;
+    width: 13px;
+    height: 8px;
+    border: 2px solid #000;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    -ms-transform: rotate(-60deg);
+    -moz-transform: rotate(-60deg);
+    -webkit-transform: rotate(-60deg);
+    transform: rotate(-45deg);
+}
+
+.input-area {
+    padding-left: 0;
+    >div {
+        display: -webkit-box;
+        display: flex;
+        >span {
+            display: block;
+            width: 33.33%;
+            position: relative;
+            select {
+                color: #333;
+                width: 100%;
+                padding: 0 pxToRem(5);
+                border: none;
+                font-size: 12px;
+                border-radius: pxToRem(5);
+                background: transparent;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                -o-appearance: none;
+                appearance: none;
+                option {
+                    background: #E8DED4;
+                }
+                background: url("down.png") no-repeat;
+                background-size: 100% 100%;
+            }
+            &+span {
+                margin-left: pxToRem(2)
+            }
+        }
+    }
+}
+
+
+/*动画*/
+
+.animationPublic {
+    -webkit-animation-play-state: paused!important;
+    animation-play-state: paused!important;
+}
+
+.animation0 {
+    -webkit-animation: animationZero .6s linear 0.5s 1 normal;
+    animation: animationZero .6s linear 0.5s 1 normal;
+}
+
+.animation1 {
+    -webkit-animation: animationOne .6s linear 0.5s 1 normal;
+    animation: animationOne .6s linear 0.5s 1 normal;
+}
+
+.animation2 {
+    -webkit-animation: animationTwo .6s linear 0.5s 1 normal;
+    animation: animationTwo .6s linear 0.5s 1 normal;
+}
+
+.animation3 {
+    -webkit-animation: animationThree .6s linear 0.5s 1 normal;
+    animation: animationThree .6s linear 0.5s 1 normal;
+}
+
+.animation5 {
+    -webkit-animation: animationFive .6s linear 0.5s 1 normal;
+    animation: animationFive .6s linear 0.5s 1 normal;
+}
+
+.animation6 {
+    -webkit-animation: animationSix .6s linear 0.5s 1 normal;
+    animation: animationSix .6s linear 0.5s 1 normal;
+}
+
+.animation7 {
+    -webkit-animation: animationSeven .6s linear 0.5s 1 normal;
+    animation: animationSeven .6s linear 0.5s 1 normal;
+}
+
+.animation8 {
+    -webkit-animation: animationEight .6s linear 0.5s 1 normal;
+    animation: animationEight .6s linear 0.5s 1 normal;
+}
+
+.transformText {
+    transform: rotateY(0) translateZ(1px);
+    -webkit-transform: rotateY(0) translateZ(1px);
+}
+
+@-webkit-keyframes animationZero {
+    0% {
+        left: 0;
+        top: 0
+    }
+    50% {
+        left: 116%;
+        top: 115%;
+    }
+    100% {
+        left: 0;
+        top: 0;
+    }
+}
+@keyframes animationZero {
+    0% {
+        left: 0;
+        top: 0
+    }
+    50% {
+        left: 116%;
+        top: 115%;
+    }
+    100% {
+        left: 0;
+        top: 0;
+    }
+}
+
+@-webkit-keyframes animationOne {
+    0% {
+        top: 0
+    }
+    50% {
+        top: 115%;
+    }
+    100% {
+        top: 0;
+    }
+}
+
+@-webkit-keyframes animationTwo {
+    0% {
+        right: 0;
+        top: 0
+    }
+    50% {
+        right: 116%;
+        top: 115%;
+    }
+    100% {
+        right: 0;
+        top: 0;
+    }
+}
+
+@-webkit-keyframes animationThree {
+    0% {
+        left: 0;
+    }
+    50% {
+        left: 116%;
+    }
+    100% {
+        left: 0;
+    }
+}
+
+@-webkit-keyframes animationFive {
+    0% {
+        right: 0;
+    }
+    50% {
+        right: 116%;
+    }
+    100% {
+        right: 0;
+    }
+}
+
+@-webkit-keyframes animationSix {
+    0% {
+        left: 0;
+        bottom: 0
+    }
+    50% {
+        left: 116%;
+        bottom: 115%;
+    }
+    100% {
+        left: 0;
+        bottom: 0;
+    }
+}
+
+@-webkit-keyframes animationSeven {
+    0% {
+        bottom: 0
+    }
+    50% {
+        bottom: 115%;
+    }
+    100% {
+        bottom: 0;
+    }
+}
+
+@-webkit-keyframes animationEight {
+    0% {
+        right: 0;
+        bottom: 0
+    }
+    50% {
+        right: 116%;
+        bottom: 115%;
+    }
+    100% {
+        right: 0;
+        bottom: 0;
+    }
+}
+
+.new-rule {
+    width: 20%;
+    border: 1px solid #fff;
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    margin-left: 5%;
+    padding: 3px;
+    font-weight: 500;
+}
+
+.new-share {
+    width: 20%;
+    border: 1px solid #fff;
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    padding: 3px;
+    font-weight: 500;
+}
+
+.widthImg {
+    width: pxToRem(65) !important;
+    height: pxToRem(65) !important;
+}
+[v-cloak] {
+    display: none;
+}
+
+// fix iphone4
+@media (max-width: 320px) {
+    .tellPhone {
+        font-size: 12px;
+    }
+}

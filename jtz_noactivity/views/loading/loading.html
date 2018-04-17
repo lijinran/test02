@@ -1,0 +1,70 @@
+<!--
+@require "loading.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>防伪验真</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" class="main loading-div" :style="{ height: screenH + 'px' }" v-cloak>
+        <div class="topBox">
+            <div class="picBox">
+                <img src="pic01.png" alt="">
+            </div>
+            <div class="input-box">
+                <div class="user-in">
+                    <input type="tel" id="userin" name="" value="" maxlength="6" v-model.trim="captchaNum" v-on:blur="disposeIn">
+                </div>
+                <div class="captcha">
+                    <span v-for="(item,index) in captchaArray" :class='{w10:index ==5,w15:index<5}'>{{item}}</span>
+
+                </div>
+
+                <div class="input-info text-center">
+                    <div v-if="!isErrmsg">
+                        请输入烟包内6位验证码
+                    </div>
+                    <div class="errcolor" v-else>
+                        {{errmsg}}
+                    </div>
+
+                </div>
+                <div class="inputBtn text-center" @click="doCheck">
+                    点击验证
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bottomBox">
+            <div class="qrcode">
+                <img src="qrcode.jpg" alt="">
+            </div>
+            <p class="qrcode-info text-center colorfff ">长按识别二维码 关注"天子新语"</p>
+            <div class="info text-center colorfff">
+                本页面含有烟草内容, 未满18岁敬请回避<br> 吸烟有害健康 劝阻青少年吸烟
+            </div>
+            <div class="copyright text-center color1">
+                版权所有: 重庆中烟&nbsp;&nbsp; |&nbsp;&nbsp;技术支持: 太和物联
+            </div>
+        </div>
+
+
+        <!-- //TODO 绑定手机号-->
+        <!--<div id="bind-phone">
+            <input type="text" name="" value="" v-model.trim="testT">
+        </div>-->
+
+
+    </div>
+</body>
+
+<link rel="import" href="../tpl/footer/footer.html?__inline">
+</body>
+
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>微信登录</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link href="css/style.css" rel="stylesheet">-->
+    <style>
+        .field-tooltipWrap {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            z-index: 19891014;
+        }
+        
+        .field-tooltipInner {
+            pointer-events: none;
+            display: table;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .field-tooltip {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .field-tooltip .field-invalidmsg,
+        .field-tooltip .field-validmsg {
+            color: #fff;
+        }
+        
+        .field-tooltip .zvalid-resultformat {
+            display: inline-block;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+            pointer-events: auto;
+            animation-name: fieldTipBounceIn;
+            -webkit-animation-name: fieldTipBounceIn;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            -webkit-animation-duration: .18s;
+            animation-duration: .18s;
+        }
+        
+        @-webkit-keyframes fieldTipBounceIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale3d(.3, .3, .3);
+                transform: scale3d(.3, .3, .3);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="message"></div>
+    <!-- config 配置 -->
+    <script src="config.js"></script>
+    <script>
+        // 微信登录前置
+
+        // 创建 XHR请求
+        function createXHR() {
+            if (window.XMLHttpRequest) { //IE7+、Firefox、Opera、Chrome 和Safari
+                return new XMLHttpRequest();
+            } else if (window.ActiveXObject) { //IE6 及以下
+                var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
+                for (var i = 0, len = versions.length; i < len; i++) {
+                    try {
+                        return new ActiveXObject(version[i]);
+                        break;
+                    } catch (e) {
+                        //跳过
+                    }
+                }
+            } else {
+                throw new Error('浏览器不支持XHR对象！');
+            }
+        }
+
+
+        //封装ajax，参数为一个对象
+        function pajax(obj) {
+            var xhr = createXHR(); //创建XHR对象
+            //通过使用JS随机字符串解决IE浏览器第二次默认获取缓存的问题
+            obj.url = obj.url + '?rand=' + Math.random();
+            obj.data = params(obj.data); //通过params()将名值对转换成字符串
+            //若是GET请求，则将数据加到url后面
+            if (obj.method === 'get') {
+                obj.url += obj.url.indexOf('?') == -1 ? '?' + obj.data : '&' + obj.data;
+            }
+            if (obj.async === true) { //true表示异步，false表示同步
+                //使用异步调用的时候，需要触发readystatechange 事件
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) { //判断对象的状态是否交互完成
+                        callback(); //回调
+                    }
+                };
+            }
+            //在使用XHR对象时，必须先调用open()方法，
+            //它接受三个参数：请求类型(get、post)、请求的URL和表示是否异步。
+            xhr.open(obj.method, obj.url, obj.async);
+            if (obj.method === 'post') {
+                //post方式需要自己设置http的请求头，来模仿表单提交。
+                //放在open方法之后，send方法之前。
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(obj.data); //post方式将数据放在send()方法里
+            } else {
+                xhr.send(null); //get方式则填null
+            }
+            if (obj.async === false) { //同步
+                callback();
+            }
+
+            function callback() {
+                if (xhr.status == 200) { //判断http的交互是否成功，200表示成功
+                    obj.success(JSON.parse(xhr.responseText)); //回调传递参数
+                } else {
+                    obj.fail(JSON.parse(xhr.responseText))
+                        // console.log('获取数据错误！错误代号：' + xhr.status + '，错误信息：' + xhr.statusText);
+                }
+            }
+        }
+        //名值对转换为字符串
+        function params(data) {
+            var arr = [];
+            for (var i in data) {
+                //特殊字符传参产生的问题可以使用encodeURIComponent()进行编码处理
+                arr.push(encodeURIComponent(i) + '=' + encodeURIComponent(data[i]));
+            }
+            return arr.join('&');
+        }
+
+        // 获取URL上参数
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return (r[2]);
+            return '';
+        }
+        // 弹窗提示
+        function getMessage(text) {
+            var message = document.getElementById('message'),
+                container =
+                '<div class="field-tooltipWrap"><div class="field-tooltipInner"><div class="field-tooltip fieldTipBounceIn"><div class="zvalid-resultformat">' +
+                text + '</div></div></div></div>';
+            message.innerHTML = container;
+            setTimeout(function() {
+                message.innerHTML = '';
+            }, 1500)
+        }
+
+        // 请求地址
+        var host = config.HOST; //(location.origin || (location.protocol + '//' + location.hostname))
+        var wxuserInfo = "/cloud2.member.api/wx/userInfoSC.do"; // 获取用户信息的
+        var wxLogin = "/cloud2.member.api/member/userInfo/wxLogin.do"; // 微信登录
+        var loddproject = window.localStorage.getItem('project') || "_jtz201804_"; // 扫码后已经存储了
+        var barData = window.sessionStorage.getItem(loddproject + 'barcodeData');
+        var wxcode = getQueryString('code'); //微信回调的code
+        barData = JSON.parse(barData);
+        if (!barData) {
+            getMessage("请重新扫码");
+        }
+
+        if (wxcode) {
+            pajax({
+                url: host + wxuserInfo,
+                method: 'get',
+                data: {
+                    code: wxcode
+                },
+                success: function(data) {
+
+                    if (data.code == 200) {
+                        window.localStorage.setItem(loddproject + "wxInfo", JSON.stringify(data.data))
+
+                        data.data ? wxDologin(data.data) : getMessage("没有用户信息");
+                    } else {
+                        data.msg && getMessage(data.msg);
+                    }
+
+                },
+                fail: function(data) {
+                    getMessage("网络错误");
+                },
+                async: true
+
+            })
+        } else {
+            getMessage("微信授权参数不正确")
+        }
+
+
+        // 用户登录
+        function wxDologin(data) {
+
+            pajax({
+                url: host + wxLogin,
+                method: 'post',
+                data: {
+                    openId: data.openid,
+                    comId: barData.comId,
+                    nickname: data.nickname,
+                    sex: data.sex,
+                    accessToken: data.access_token,
+                    refreshToken: data.refresh_token,
+                    headImgUrl: data.headimgurl,
+                    province: data.province,
+                    city: data.city,
+                    unionId: data.unionid,
+                    materialsId: barData.product_id,
+                    provinceUser: barData.province,
+                    cityUser: barData.city,
+                    barcode: barData.barcode
+                },
+                success: function(data) {
+
+                    if (data.code == 200) {
+                        window.localStorage.setItem(loddproject + "wxLogin", JSON.stringify(data.data))
+                        window.location.href = loddproject + '/loading.html'; // + params;
+                        return false;
+                    } else {
+                        data.msg && getMessage(data.msg);
+                    }
+
+                },
+                fail: function(data) {
+                    getMessage("网络错误");
+                },
+                async: true
+
+            })
+
+
+        }
+    </script>
+
+
+</body>
+
+</html>

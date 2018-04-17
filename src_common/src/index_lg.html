@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>提示</title>
+    <style>
+        .field-tooltipWrap {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            z-index: 19891014;
+        }
+        
+        .field-tooltipInner {
+            pointer-events: none;
+            display: table;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .field-tooltip {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .field-tooltip .field-invalidmsg,
+        .field-tooltip .field-validmsg {
+            color: #fff;
+        }
+        
+        .field-tooltip .zvalid-resultformat {
+            display: inline-block;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+            pointer-events: auto;
+            animation-name: fieldTipBounceIn;
+            -webkit-animation-name: fieldTipBounceIn;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            -webkit-animation-duration: .18s;
+            animation-duration: .18s;
+        }
+        
+        @-webkit-keyframes fieldTipBounceIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale3d(.3, .3, .3);
+                transform: scale3d(.3, .3, .3);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="message"></div>
+
+    <!-- config 配置 -->
+    <script src="config.js?v=2001"></script>
+    <script>
+        //隐藏微信右上角的分享 
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+            //通过下面这个API显示右上角按钮
+            WeixinJSBridge.call('hideOptionMenu');
+        });
+
+        var notarizeFnc = document.getElementById('notarizeFnc'),
+            padlockFnc = document.getElementById('padlockFnc'),
+            ischeckbox = document.getElementById('ischeckbox'),
+            off = false,
+            uiindexcontaite = document.getElementById('uiindexcontaite'),
+            uiindexdeclare = document.getElementById('uiindexdeclare'),
+            assentimpower = document.getElementById('assentimpower'),
+            thenreading = document.getElementById('thenreading'),
+            projecty = window.localStorage.getItem('project'),
+            userToken = window.localStorage.getItem(projecty + 'wxLogin'),
+            longitude = '',
+            latitude = '',
+            options = {
+                enableHighAccuracy: true,
+                maximunAge: 1000,
+                timeout: 2000
+            };
+        userToken && (userToken = JSON.parse(userToken));
+        userToken = userToken && userToken.userToken;
+        if (userToken) {
+
+            onload()
+        } else {
+
+            onload()
+        }
+
+        function getMessage(text) {
+            var message = document.getElementById('message'),
+                container =
+                '<div class="field-tooltipWrap"><div class="field-tooltipInner"><div class="field-tooltip fieldTipBounceIn"><div class="zvalid-resultformat">' +
+                text + '</div></div></div></div>';
+            message.innerHTML = container;
+            setTimeout(function() {
+                message.innerHTML = '';
+            }, 1500)
+        }
+
+
+
+        function onload() {
+
+
+            //消除本地缓存(消除一些扫码后干扰的数据)
+            removeItems(['winId', 'prizeName', 'prizeType', 'prizeValue'], true);
+            //获取get模式下url中的指定参数值
+            // var barcode = window.location.search.replace('?', ''),
+            //     result, status,
+            //     invitecode = getQueryString('i');
+
+            var barcode = getQueryString('barcode'),
+                result, status,
+                invitecode = getQueryString('i');
+
+            // debugger
+            if (!barcode || '' === barcode) {
+                document.body.classList.remove('loading');
+                off = false;
+                getMessage('二维码不能为空');
+                return;
+            }
+            // 处理 多余"="
+            if (barcode.lastIndexOf("=") > -1) {
+                barcode = barcode.slice(0, barcode.length - 1)
+            }
+            //测试新疆的
+            // lat = 45.593344;
+            // lon = 84.886127;
+
+            // fix 提供给测试用的
+
+            longitude = getQueryString('lng');
+            latitude = getQueryString('lat');
+
+
+            // ----- 重庆      
+            // longitude = 106.567072;
+            // latitude = 29.525031;
+            // ----------- 模拟 四川 绵阳市 游仙区
+            // longitude = 104.773192;
+            // latitude = 31.496829;
+            //指定服务器接口地址
+
+            var origin = config.HOST; // (location.origin || (location.protocol + '//' + location.hostname))
+            var url = origin + '/cloud2.barcode.api/order/info/cqQueryOrderInfo.do' + '?barcode=' + barcode +
+                '&userToken=' + userToken + '&lng=' + longitude + '&lat=' + latitude;
+            //var url = 'http://121.40.248.203:8082/cloud2.barcode.api/order/info/queryOrderInfo' + '?barcode=' + barcode + '&userToken=' + userToken;
+            //获取应用配置信息（关联二维码）
+            var xhr = new window.XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    document.body.classList.remove('loading');
+                    off = false;
+                    if (xhr.status == 200) {
+                        if (xhr.responseText && '' != xhr.responseText) {
+                            try {
+                                result = JSON.parse(xhr.responseText);
+                            } catch (e) {}
+                            //console.log(result);
+                            if (isObject(result) && result.code == 200 && result.data && 'object' === typeof(
+                                    result.data)) {
+                                //先判断应用状态 3102表示正在运行中
+                                //debugger;
+                                status = result.data.status;
+                                // 条盒 直接跳转网页
+                                if (result.data.style != 2) {
+                                    window.location.href = "http://qr.cncqti.com/formal/jtzupdate.html"
+                                    return false
+                                }
+
+                                // result.data.resource = 'jtz_chongqing' // 测试用
+                                // debugger
+                                if (3102 !== status && 1001 !== status) {
+                                    jumpAppTip(result.data.status, result.data.resource || 'xlongyun');
+                                    return;
+                                }
+                                //本地存储支持情况
+                                if (window.sessionStorage) {
+                                    if (result.data.isLogin == 0) {
+                                        window.localStorage.removeItem(result.data.resource + 'wxLogin');
+                                    }
+                                    //setItems(result.data, 'localStorage');
+                                    // window.localStorage.setItem(result.data.resource + "invitecode", invitecode);
+                                    window.localStorage.setItem("project", result.data.resource);
+                                    window.sessionStorage.setItem(result.data.resource + "barcodeData", JSON.stringify(
+                                        result.data));
+                                    //window.sessionStorage.setItem("scanData",JSON.stringify(result.data));
+                                } else {
+                                    setItems(result.data, 'cookie', true);
+                                }
+                                //模板是否存在
+                                if (result.data.resource && '' !== result.data.resource) {
+                                    //跳转到对应的模板目录
+                                    //var params = paramData(result.data, true);
+                                    if (userToken) {
+                                        window.location.href = result.data.resource + '/loading.html'; // + params;
+                                        return false;
+                                    } else {
+                                        // 微信授权
+                                        checkWX()
+                                    }
+
+                                } else {
+                                    getMessage('未找到应用对应的模板');
+                                }
+                            } else if (isObject(result) && result.code == 1001 && result.data) {
+                                //判断码状态（是否已激活）
+                                if (result.data.resource) {
+                                    getMessage('码状态已激活');
+                                    //window.location.href = result.data.resource + '/codeless.html';
+                                } else {
+                                    getMessage('码状态未激活');
+                                }
+                            } else if (isObject(result) && (result.code == 3101||result.code == 3103||result.code == 3104)) {
+                                window.location.href = "http://qt.cncqti.com/formal/update.html"
+                                return false
+                            }else {
+                                //document.body.innerHTML = result.msg;
+                                getMessage(result.msg);
+                            }
+                        }
+                    } else {
+                        getMessage('请求失败,请重新扫描');
+                    }
+                }
+            };
+            xhr.send(null);
+
+            function jumpAppTip(status, resource) {
+                window.location.href = resource + '/application.html?status=' + status;
+                return false;
+            }
+
+            //格式化参数, flag:字符串首是否带'?'
+            function paramData(object, flag) {
+                var data = object,
+                    s = '';
+                for (var k in data)(s += '&' + k + '=' + data[k]);
+                s = s.substr(1);
+                return flag === true ? '?' + s : s;
+            }
+            //设置本地返回值缓存
+            function setItems(items, obj, flag) {
+                for (var k in items) {
+                    if (items.hasOwnProperty(k)) {
+                        if ('object' === typeof(items[k])) {
+                            setItems(items[k], obj, flag);
+                            return false;
+                        }
+                        setItem('_' + k + '_', items[k], obj, flag);
+                    }
+                }
+            }
+
+            function setItem(key, val, obj, flag) {
+                !flag ? window[obj].setItem(key, val) : Cookie(key, val);
+            }
+
+            function removeItems(keys, flag) {
+                //重置
+                if (flag) {
+                    reset();
+                    return false;
+                }
+
+                //移除
+                if ('[object Array]' === toString.call(keys)) {
+                    for (var i = 0, len = keys.length; i < len; ++i) {
+                        removeItem(keys[i]);
+                    }
+                } else {
+                    removeItem(keys[i]);
+                }
+
+            }
+
+            function removeItem(key) {
+                var key = '_' + key + '_';
+                window.localStorage.removeItem(key);
+                window.sessionStorage.removeItem(key);
+                Cookie(key, null);
+            }
+
+            function reset() {
+                /* S-吉林*/
+                var loddproject = window.localStorage.getItem('project'),
+                    lodduserToken = window.localStorage.getItem(loddproject + 'wxLogin'),
+                    lodditemcomId = window.localStorage.getItem(loddproject + 'comId'),
+                    lodduserwxInfo = window.localStorage.getItem(loddproject + 'wxInfo'),
+                    lodditemphone = window.localStorage.getItem(loddproject + 'phone');
+                /* E-吉林*/
+
+                window.localStorage.clear();
+                window.sessionStorage.clear();
+                //重新
+                /* S-吉林 */
+                (loddproject && '' !== loddproject && 'null' !== loddproject) && window.localStorage.setItem('project',
+                    loddproject);
+                (lodduserToken && '' !== lodduserToken && 'null' !== lodduserToken) && window.localStorage.setItem(
+                    loddproject + 'wxLogin', lodduserToken);
+                (lodduserwxInfo && '' !== lodduserwxInfo && 'null' !== lodduserwxInfo) && window.localStorage.setItem(
+                    loddproject + 'wxInfo', lodduserwxInfo);
+                (lodditemcomId && '' !== lodditemcomId && 'null' !== lodditemcomId) && window.localStorage.setItem(
+                    loddproject + 'comId', lodditemcomId);
+                (lodditemphone && '' !== lodditemphone && 'null' !== lodditemphone) && window.localStorage.setItem(
+                    loddproject + 'phone', lodditemphone);
+                /* E-吉林*/
+
+            }
+            //是否为对象
+            function isObject(val) {
+                return '[object Object]' == toString.call(val);
+            }
+            //处理document.cookie
+            function Cookie(key, value, options) {
+                if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value === null ||
+                        value === undefined)) {
+                    options = options || {};
+                    if (value === null || value === undefined) {
+                        options.expires = -1;
+                    }
+                    if (typeof options.expires === 'number') {
+                        var days = options.expires,
+                            t = options.expires = new Date();
+                        t.setDate(t.getDate() + days);
+                    }
+                    value = String(value);
+                    return (document.cookie = [encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(
+                            value), options.expires ? '; expires=' + options.expires.toUTCString() : '',
+                        options.path ? '; path=' + options.path : '', options.domain ? '; domain=' + options.domain :
+                        '', options.secure ? '; secure' : ''
+                    ].join(''));
+                }
+                options = value || {};
+                var decode = options.raw ? function(s) {
+                    return s;
+                } : decodeURIComponent;
+                var pairs = document.cookie.split('; ');
+                for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
+                    if (decode(pair[0]) === key)
+                        return decode(pair[1] || '');
+                }
+                return null;
+            }
+        }
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return (r[2]);
+            return '';
+        }
+
+
+        // 验真微信
+        function checkWX() {
+            var wappId = window.config.wappId;
+            var hosturl = (location.origin || (location.protocol + '//' + location.hostname));
+            // wredirectUri = "`${window.th.Domain}?${hosturl}${window.th.callPage}`";
+            var wredirectUri = window.config.Domain + "?" + hosturl + window.config.fixCallpage;
+
+            // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${wappId}&redirect_uri=${wredirectUri}&response_type=code&scope=snsapi_userinfo&state=#wechat_redirect`;
+            window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + wappId +
+                "&redirect_uri=" + wredirectUri + "&response_type=code&scope=snsapi_userinfo&state=#wechat_redirect";
+            return false;
+        }
+    </script>
+</body>
+
+</html>

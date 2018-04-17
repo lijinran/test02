@@ -1,0 +1,65 @@
+@import "../../../components/common/mixins.scss";
+// top roll div
+.m-tipRollDiv {
+    max-height: pxToRem(25);
+    line-height: pxToRem(25);
+    font-size: pxToRem(12);
+    display: block;
+    overflow: hidden;
+    background: #FFCC19;
+    img {
+        width: 75%;
+        display: inline-block;
+        vertical-align: text-bottom;
+        margin-right: pxToRem(4);
+    }
+    //向左滚动
+    .m-ScrollAround {
+        width: 100%;
+        text-align: left;
+        overflow: hidden;
+        float: left;
+        .u-left {
+            width: 7%;
+        }
+        .u-right {
+            width: 85%;margin: 0 auto;
+        }
+        ul {
+            // width: 90%;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-top: 0;
+            li {
+                display: inline-block;
+                min-width: 100%;
+                /*width: 110%;*/
+                padding-right: pxToRem(10);
+
+            }
+        }
+    }
+    //向上滚动
+    .m-ScrollUp {
+        width: 40%;
+        height: 1rem;
+        float: right;
+        overflow: hidden;
+        text-align: right;
+        ul {
+            // width: 90%;
+            // overflow: hidden;
+            // white-space: nowrap;
+            li {
+                display: inline-block;
+                height: 1rem;
+                width: 100%;
+            }
+        }
+    }
+}
+
+.g-con {
+    margin: 0 auto;
+    padding: 0 0.5rem
+}

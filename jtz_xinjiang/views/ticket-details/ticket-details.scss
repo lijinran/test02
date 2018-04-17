@@ -1,0 +1,11 @@
+@import "../../components/common/mixins.scss";
+.ticket-header {
+  padding: pxToRem(20);
+  img.quan {
+    width: pxToRem(111);
+    margin: 0 auto;
+  }
+  .ticket-name {padding: pxToRem(10);text-align: center;font-size: pxToRem(15);margin-bottom: pxToRem(10);}
+  .code {text-decoration: underline;}
+  p {text-align: center;}
+}

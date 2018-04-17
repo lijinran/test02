@@ -1,0 +1,125 @@
+@import "../../components/common/mixins.scss";
+.result-public {
+    display: flex;
+    flex-direction: column;
+}
+
+.kindResult {
+    background: #ED423B url("longyearbg.png") no-repeat;
+    background-size: 100% 100%;
+}
+
+.ticketResult {
+    background: url("ticket-bg.png") no-repeat;
+    background-size: 100%;
+}
+
+.redpacketResult {
+    background: url("redpacket-bg.png") no-repeat;
+    background-size: 100%;
+}
+
+.result-content {
+    flex: 1;
+    color: #403531;
+    padding-bottom: pxToRem(40);
+    .result-text {
+        margin: pxToRem(30) auto pxToRem(20);
+        p {
+            text-align: center;
+            font-size: pxToRem(16);
+        }
+        p:last-child {
+            color: #FBCA88;
+        }
+    }
+    .kind-content {
+        //实物
+        p {
+            text-align: center;
+            margin-bottom: pxToRem(20)
+        }
+        img {
+            margin: 0 auto;
+            width: pxToRem(120);
+        }
+    }
+    .redpacket-content {
+        //红包
+        p.tishi-text {
+            text-align: center;
+            margin-bottom: pxToRem(20)
+        }
+        img.ico-class {
+            margin: 0 auto;
+            width: pxToRem(80);
+        }
+        .money-text {
+            text-align: center;
+            color: #FFCA18;
+            position: relative;
+            top: pxToRem(-30);
+        }
+        .getting-explain {
+            width: 92%;
+            margin: pxToRem(80) auto pxToRem(50);
+            .explain-btn {
+                /*span:last-child {    float: right;  display: inline-block;  width: pxToRem(40);  text-align: center;  height: pxToRem(30);}*/
+                color: #3F382E;
+            }
+        }
+    }
+    .ticket-content {
+        //卡券
+        p.ticket-tishi {
+            text-align: center;
+            margin-bottom: pxToRem(20)
+        }
+        .ticket-list {
+            width: 80%;
+            margin: 0 auto;
+            ul {
+                width: 100%;
+                li {
+                    float: left;
+                    background: #FFCC19;
+                    width: 40%;
+                    padding: 3% 5%;
+                    margin: pxToRem(5) 5%;
+                    border: pxToRem(2) solid #fff;
+                    border-radius: 5px;
+                    .gift-img {
+                        width: pxToRem(96);
+                        display: table-cell;
+                        height: 3rem;
+                        text-align: center;
+                        vertical-align: middle;
+                    }
+                    img {
+                        width: auto;
+                        height: auto;
+                        max-width: 100%;
+                        max-height: 100%;
+                        margin: 0 auto;
+                    }
+                    p {
+                        text-align: center;
+                        height: pxToRem(44)
+                    }
+                }
+            }
+        }
+        .ticket-more {
+            padding: pxToRem(3) 0;
+            text-align: center;
+            width: 50%;
+            margin: pxToRem(5) auto 0
+        }
+    }
+}
+
+.result-fixed-div {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}

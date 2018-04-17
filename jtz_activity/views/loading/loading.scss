@@ -1,0 +1,305 @@
+@import "../../components/common/mixins.scss";
+.main {}
+
+.loading-div {
+    background: url('loading_bg.jpg') no-repeat;
+    background-size: 100% 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.topTip {
+    width: 100%;
+    background: $newbgcolor;
+    font-size: pxToRem(10);
+    padding: 0 pxToRem(10);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.topBox {
+    height: 55%;
+    overflow: hidden;
+    .noll {
+        padding-top: pxToRem(10);
+    }
+    .picBox {
+        display: block;
+        margin: 0 auto;
+        padding-top: pxToRem(10);
+        width: pxToRem(120);
+        img {
+            // border: 1px solid #ccc;
+            width: 100%;
+        }
+    }
+    .input-box {
+        width: 80%;
+        margin: 0 auto;
+        color: #555;
+        position: relative;
+        .user-in {
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%; // background: #ffe
+            input {
+                background: transparent;
+                border: none;
+                width: 100%;
+                height: pxToRem(40);
+                font-size: pxToRem(16);
+                line-height: pxToRem(40);
+                text-indent: pxToRem(16);
+                letter-spacing: pxToRem(30); // color: rgba(0, 0, 0, 0.0)
+            }
+        }
+        .captcha {
+            width: 80%;
+            margin: pxToRem(10) auto;
+            height: pxToRem(40);
+            line-height: pxToRem(40);
+            background: url("input01.png") center center no-repeat;
+            background-size: 100%; // display: flex;
+            // flex-wrap: nowrap;
+            span {
+                display: inline-block; // justify-content: center;
+                // align-items: center;
+                // flex: 1;
+                // width: 15%;
+                margin-right: pxToRem(5);
+                text-align: center;
+                font-size: pxToRem(16);
+            }
+        }
+        .input-info {
+            margin: 0 auto pxToRem(10);
+            font-size: pxToRem(15);
+        }
+        .inputBtn {
+            height: pxToRem(50);
+            line-height: pxToRem(50);
+            font-size: pxToRem(16);
+            background: url('btn01.png') center center no-repeat;
+            background-size: 100% 100%;
+            color: #BB0104;
+        }
+    }
+}
+
+// 底部说明
+.bottomBox {
+    position: absolute;
+    bottom: pxToRem(20); // margin-top: pxToRem(40);
+    width: 100%;
+    font-size: pxToRem(14);
+    color: #555;
+    .info {
+        font-size: pxToRem(14);
+        margin-bottom: pxToRem(10);
+    }
+}
+
+.copyright {
+    font-size: pxToRem(12);
+}
+
+.qrcode {
+    margin: 0 auto;
+    width: pxToRem(110);
+    max-width: pxToRem(110);
+    overflow: hidden;
+    padding: 5px;
+    //background: #fff;
+    img {
+        width: 100%;
+        border: 0;
+    }
+}
+
+.qrcode-info {
+    margin-top: pxToRem(5);
+    margin-bottom: pxToRem(10);
+}
+
+.main-wrap {
+    position: absolute;
+    top: 15%;
+    left: 6%;
+    width: 88%;
+    color: #555;
+    h2 {
+        font-weight: normal;
+        color: #333;
+    }
+    .main-content {
+        padding: 10px 15px;
+        font-size: 16px;
+        text-align: center;
+        background: #E8DED4 url("../draw/popUpCenter.png") no-repeat;
+        background-size: 100% 100%;
+        max-height: 80%;
+        overflow-y: auto;
+        .guize-divs {
+            span {
+                white-space: pre-line !important;
+            }
+        }
+
+    }
+    .main-footer {
+        background: url("../draw/popUpDown.png") no-repeat;
+        background-size: 100% 100%;
+        padding: 15px 0 25px;
+        text-align: center;
+    }
+    .btn {
+        font-size: pxToRem(14);
+        padding: pxToRem(1) pxToRem(30);
+        background: #BB0106;
+        color: #fff;
+    }
+    .main-close {
+        padding-top: pxToRem(20);
+        text-align: center; // background: url("close.png") center bottom no-repeat;
+        // background-size: auto;
+        img {
+            display: inline-block;
+            width: pxToRem(36);
+        }
+    } // 2017年10月10日9:34:14
+    .mainBtn {
+        padding: pxToRem(1) pxToRem(20);
+    }
+    .lxrBg {
+        background: url("../draw/lxr-bg.png") no-repeat;
+        background-size: 100% 100%;
+    }
+    .sjBg {
+        background: url("../draw/sj-bg.png") no-repeat;
+        background-size: 100% 100%;
+    }
+    .addBg {
+        background: url("../draw/add-bg.png") no-repeat;
+        background-size: 100% 100%;
+    }
+    .dxBg {
+        background: url("../draw/dx-bg.png") no-repeat;
+        background-size: 100% 100%;
+    }
+}
+
+.color333 {
+    color: #333!important;
+}
+
+.ui-mask {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 996 !important;
+}
+
+.ui-share {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 998 !important;
+    display: block;
+    text-align: center;
+    img {
+        width: 84%;
+        margin-left: 10%
+    }
+}
+
+.bind-address,
+.bind-phone {
+    display: block;
+}
+
+.inputBox {
+    width: 100%;
+    min-height: pxToRem(35);
+    line-height: pxToRem(35);
+    margin-top: pxToRem(10);
+    position: relative;
+    .icon {
+        width: pxToRem(18);
+        height: pxToRem(18);
+        display: inline-block;
+        margin-top: pxToRem(10);
+        margin-right: pxToRem(5);
+    }
+    img {
+        width: 100%;
+    }
+    input {
+        margin-top: pxToRem(8);
+        margin-left: pxToRem(50);
+        line-height: pxToRem(20);
+        width: 80%;
+        border: none;
+        background: transparent; // color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+input::-webkit-input-placeholder {
+    /* WebKit browsers*/
+    color: #909092;
+    font-size: pxToRem(13);
+}
+
+.input-code {
+    input {
+        width: 45%;
+    }
+    .getcode {
+        height: 100%;
+        min-width: 35%;
+        background: url("../draw/getcode.png") no-repeat;
+        background-size: contain;
+        position: absolute;
+        right: 2px;
+        padding-left: 10%;
+        font-size: 12px;
+        text-align: left;
+    }
+}
+
+// fix 
+.w10 {
+    width: 10%;
+}
+
+.w15 {
+    width: 15%;
+}
+
+// fix iphone4 
+@media (max-width: 320px) {
+    .qrcode-info {
+        margin-bottom: pxToRem(11);
+    }
+    .topBox>.input-box>.inputBtn {
+        height: pxToRem(45);
+        line-height: pxToRem(45);
+        font-size: pxToRem(14);
+    }
+    .topBox>.picBox {
+        padding-top: pxToRem(5);
+    }
+    .topBox>.noll {
+        padding-top: pxToRem(5);
+    }
+    .bottomBox {
+        margin-top: pxToRem(30);
+    }
+}

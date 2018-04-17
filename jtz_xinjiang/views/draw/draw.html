@@ -1,0 +1,222 @@
+<!--
+@require "draw.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>金天子扫码 好礼送不停</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak class="main draw-content" :style="{ height: screenH + 'px' }">
+        <div class="draw-header">
+            <vue-marquee :scroll-win="scrollWin" :time-text="timeText"></vue-marquee>
+            <div class="clearfix"></div>
+        </div>
+        <div class="prizeList-draw flex-content">
+
+            <div class="draw-banner">
+                <span class="rule" @click="ruleFun"><img src="rule.png" alt=""></span>
+                <span class="title"><img src="title.png" alt=""></span>
+                <span class="share" @click="doShare"><img src="share.png" alt=""></span>
+            </div>
+
+            <!-- <img src="titleText.png" class="draw-titleText" alt="">
+            <div class="draw-time">活动时间：{{stime | gettime}}-{{etime | gettime}}</div>
+            <div class="draw-rule" @click="ruleFun">活动规则</div> -->
+
+            <div class="draw-lottery">
+                <ul class="grid" id="Ulgrid" v-cloak>
+                    <li v-for='(el,index) in prizeMenu' :class="{borderRed:isIndex==(index+1)}">
+                        <figure v-if="index!=4" @click="isClick(index)" :class="'animation'+index" class="animationPublic">
+                            <img class="beijingImg" src="fanpaiBeiBg.png" :class="{opacity0:!isOpacity,opacity1:isOpacity}">
+                            <div class="front-div" :class="{opacity0:isOpacity,opacity1:!isOpacity}">
+                                <div class="logoUrl-img"><img :src="el.logoUrl" alt=""></div>
+                                <p>{{el.name}}</p>
+                            </div>
+                        </figure>
+                        <div v-if="index==4" class="start-Li">
+                            <img src="startBtn.png" v-if="chance&&!isOpacity&&nowTime>stime&&nowTime<etime" @click="startFun" alt="">
+                            <!--正常翻牌-->
+                            <img src="startGray.png" v-if="(nowTime>stime&&chance==0&&nowTime<etime)||nowTime<stime" alt="">
+                            <!--不能翻牌-->
+                            <img src="endBtn.png" v-if="etime<nowTime" alt="">
+                            <!--活动结束-->
+                            <div v-if="chance && isOpacity">请选择卡片</div>
+                            <div v-if="nowTime>stime&&nowTime<etime">您拥有{{chance}}次机会</div>
+                        </div>
+                    </li>
+                    <div class="clearfix"></div>
+                </ul>
+            </div>
+            <br/>
+            <p class="draw-tell text-center"><a href="tel:400-689-1235">客服电话：400-689-1235</a></p>
+        </div>
+
+        <div class="menuFooter-nav-draw">
+            <img src="prizeFooterBg.png" class="prizeFooterBg" alt="">
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div>
+
+        <transition name="popin">
+            <!--活动规则-->
+            <div id="ruleId" class="bind-phone ui-dialog huodong-guize addtransform" v-show="showRule" style="display:none;z-index: 1000;">
+                <div class="main-wrap" style="width: 86%;left: 0;margin-left: 7%;">
+                    <div class="main-content">
+                        <h2 class="text-center">活动规则</h2>
+                        <div class="text-left fontSize13" v-html="comment"></div>
+                    </div>
+                    <div class="main-footer">
+                        <button type="submit" class="btn" @click="hidePopup">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+
+        <transition name="popin">
+            <!--不再提醒-->
+            <div id="noPrompt" class="bind-phone ui-dialog addtransform" v-show="showPrompt" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center">确定消耗一次翻牌机会？</h2>
+                        <p class="text-center fontSize13">当前拥有{{chance}}次翻牌机会</p>
+                        <div class="checkbox-input">
+                            <input type="checkbox" class="input_check " v-model="checked" id="check1"><label for="check1">不再提醒</label>
+                        </div>
+                    </div>
+
+                    <div class="main-footer">
+                        <button type="submit" class="btn" style="margin-right: 1rem" @click="cancelFun">取消</button>
+                        <button type="submit" class="btn" @click="PromptFun">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="cancelFun">
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+
+
+        <transition name="popin">
+            <!-- 激活手机号码-->
+            <div id="bind-phone" class="bind-phone ui-dialog addtransform" v-show="showPhone" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center">首次领取,请先激活手机号码</h2>
+                        <p class="text-center color1">*重庆中烟活动通用</p>
+                        <div class="inputBox input-phone">
+                            <span class="icon pull-left"><img src="phone.png" alt=""></span>
+                            <input type="tel" maxlength="11" placeholder="请输入领取的手机号" autocomplete="off" v-model="phone" class="pull-left colorfff">
+                        </div>
+                        <div class="inputBox input-code">
+                            <span class="icon pull-left"><img src="code.png" alt=""></span>
+                            <input type="tel" maxlength="6" placeholder="请输入短信验证码" v-model="code" class="pull-left colorfff">
+                            <button class="getcode" @click="getCode" id="getCode">获取验证码</button>
+                        </div>
+                    </div>
+                    <div class="main-footer" @click="bindPhoneFun">
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <transition name="popin">
+            <!-- 领奖-->
+            <div id="get-prize" class="bind-phone ui-dialog addtransform" v-show="showPrize" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center">恭喜您获得</h2>
+                        <p class="text-center color1">{{prizeName}}</p>
+                    </div>
+                    <div class="main-footer" @click="getPrizeFun">
+                        <button type="submit" class="btn">点击领取</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopupPrize">
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+
+        <transition name="popin">
+            <!-- 实物 -->
+            <div id="bind-address" class="bind-phone ui-dialog addtransform" v-show="showAddress" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center">请填写收货地址信息</h2>
+                        <div class="inputBox input-phone">
+                            <input type="text" placeholder="收货人" maxlength="20" v-model="contacts" class="pull-left colorfff">
+                        </div>
+                        <div class="inputBox input-phone">
+                            <input type="tel" maxlength="11" placeholder="联系电话" v-model="contactsPhone" class="pull-left colorfff">
+                        </div>
+                        <div class="inputBox input-area colorfff">
+                            <vue-area :province="deliveryProvince" :city="deliveryCity" :county="deliveryArea" @onchange="change"></vue-area>
+                        </div>
+                        <div class="inputBox input-phone">
+                            <input type="text" placeholder="详细地址" maxlength="100" v-model="address" class="pull-left colorfff">
+                        </div>
+                    </div>
+                    <div class="main-footer" @click="getKindFun">
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopupPrize">
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <transition name="popin">
+            <!-- 显示周计划 -->
+            <div id="getRank" class="bind-phone ui-dialog addtransform" v-show="showRank" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center" v-html="showGetRankTxt">&nbsp;</h2>
+                        <!-- <p class="text-center color1">{{prizeName}}</p> -->
+                    </div>
+                    <div class="main-footer" @click="hidePopup">
+                        <button type="submit" class="btn">确认</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+
+        </transition>
+
+
+
+        <transition name="fade">
+            <!-- 显示分享 -->
+            <div id="share" class="ui-share ui-dialog addtransform" v-show="showShare" style="display:none;z-index: 1000;">
+                <span @click="hidePopup"><img src="doshare.png" alt=""></span>
+            </div>
+        </transition>
+
+
+        <transition name="fade">
+            <!-- 蒙版层 -->
+            <div class="ui-mask addtransform" v-show="showMask"></div>
+        </transition>
+
+    </div>
+
+</body>
+
+</html>

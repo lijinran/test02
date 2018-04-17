@@ -1,0 +1,132 @@
+<!--
+@require "exchange-welfare.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>兑换福利</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="main draw-content" :style="{ height: screenH + 'px' }">
+        <div class="draw-header">
+            <vue-marquee :scroll-win="scrollWin" :time-text="timeText"></vue-marquee>
+            <div class="clearfix"></div>
+        </div>
+        <div class="prizeList newyearbg" v-cloak>
+            <div class="ucenter-message">
+                <div class="message-left left colorfff">
+                    <div class="head-portrait"><img :src="userpic" alt=""></div>
+                    <p class="ucenter-name">{{nickname}}</p>
+                </div>
+                <div class="message-right left colorfff">
+                    <p>电话号码：{{userphone}}<span v-show="!userphone">未激活</span></p>
+                    <p>福利卡：{{cqJnkpValue}}张</p>
+                </div>
+                <div class="deactivation right" v-show="!userphone" @click="doBindPhone">
+                    <img src="../ucenter/qujihuo.png" alt=""></div>
+                <!--去激活-->
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="cut-btn">
+                <div class="welfare-title">兑换福利</div>
+            </div>
+            <div class="welfare-list">
+                <!-- <p class="welfare-explain">*1张福利卡片可兑1张券</p> -->
+                <p class="welfare-explain">&nbsp;</p>
+                <ul>
+                    <li v-for="item in cqJnkptList" @click="doExchangeCard(item)">
+                        <div class="cqJnkptList-img left"><img :src="item.logoUrl" alt="" v-if="item.logoUrl != ''">
+                            <img src="default.png" alt="" v-else>
+                        </div>
+                        <div class="listOne left colorfff ">
+
+                            <p>{{item.name}}</p>
+                            <p v-if="item.type ==1304" class="info">
+                                消耗福利卡: 1
+                            </p>
+                            <div v-if="item.type ==130301" class="info">
+                                <p>消耗福利卡: {{item.cardNum}}</p>
+                                <p>库存: {{item.residue}}</p>
+                                <p>日剩余: {{item.dayResidue}}</p>
+                            </div>
+                        </div>
+                        <!--<p>库存：1254</p>-->
+                    </li>
+
+
+
+                </ul>
+
+                <div class="clearfix"></div>
+                <div class="getmore text-center" v-if="isShowgetMore" @click="getMore">
+                    加载更多
+                </div>
+            </div>
+
+        </div>
+        <div class="menuFooter-nav rank-nav" v-cloak>
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div>
+        <!-- 积分不够,与卡片不够弹窗 -->
+        <transition name="popin">
+            <div id="noPoint" class="bind-phone ui-dialog" v-show="isShowNoPoint" style="display:none; z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center" v-html="isShowNoPointTxt"></h2>
+                    </div>
+                    <div class="main-footer" @click="hidePopup">
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- 弹窗 绑定手机号-->
+        <transition name="popin">
+            <div id="bind-phone" class="bind-phone ui-dialog" v-show="showPhone" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center color1">首次领取,请先激活手机号码</h2>
+                        <p class="text-center color1">*重庆中烟活动通用</p>
+                        <div class="inputBox input-phone">
+                            <span class="icon pull-left"><img src="phone.png" alt=""></span>
+                            <input type="tel" maxlength="11" placeholder="请输入领取的手机号" autocomplete="off" v-model="phone" class="pull-left colorfff">
+                        </div>
+                        <div class="inputBox input-code">
+                            <span class="icon pull-left"><img src="code.png" alt=""></span>
+                            <input type="tel" maxlength="6" placeholder="请输入短信验证码" v-model="code" class="pull-left colorfff">
+                            <button class="getcode" @click="getCode" id="getCode">获取验证码</button>
+                        </div>
+                    </div>
+                    <div class="main-footer" @click="bindPhoneFun(1)" v-if="isGetTicket">
+                        <!--绑定后领奖-->
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-footer" @click="bindPhoneFun(0)" v-if="!isGetTicket">
+                        <!--绑定后刷新-->
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <!-- 蒙版层 -->
+        <transition name="fade">
+            <div class="ui-mask" v-show="showMask"></div>
+        </transition>
+
+    </div>
+
+</body>
+
+</html>

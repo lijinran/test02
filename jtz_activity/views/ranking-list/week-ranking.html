@@ -1,0 +1,139 @@
+<!--
+@require "week-ranking.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>周冠军</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="main draw-content newyearbg changbg " :style="{ height: screenH + 'px' }">
+        <div class="draw-header">
+            <vue-marquee :scroll-win="scrollWin" :time-text="timeText"></vue-marquee>
+            <div class="clearfix"></div>
+        </div>
+        <div class="nullLine">&nbsp;</div>
+        <div class="prizeList" v-cloak>
+            <!-- <div class="ranking-title">金天子{{thisCity}}扫码排行榜</div> -->
+            <div class="ranking-tipbar" v-cloak>
+                <p class="ranking-tipbar-title">● 金天子{{thisCity}}扫码周冠军 ●</p>
+            </div>
+            <div class="ranking-tipbar-time" v-cloak>
+                <p v-if="turnDate">({{turnDate}})</p>
+                <p v-else>(活动未开始)</p>
+            </div>
+
+            <div class="ranking-hint-week" v-html="rankMsg">&nbsp;</div>
+            <!--结束以后,并进入到排位,还没有填写地址-->
+            <!-- <div class="getting-btn" v-if="isOver && rankFlag && !isGet" @click="goGetAward">点击领取</div> -->
+            <div class="ranking-list-content" v-cloak>
+                <!--排行榜-->
+                <ul class="">
+                    <li v-for="item in rankList">
+                        <span class="list-table-call list-num" v-if="item.rankNo =='NO.1'">
+                            <img src="no1.png" alt="" class="list-noimg">
+                        </span>
+
+                        <span class="list-table-cell list-num " :class="{color1:item.curRed == 1}" v-else>{{item.rankNo}}</span>
+
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left">
+                                <img :src="item.headImgUrl" alt="头像" v-if="item.headImgUrl !=''">
+                                <img src="../exchange-welfare/default.png" alt="头像" v-else>
+                            </div>
+                            <div class="times-div left">
+                                <span class="name">{{item.nickname}}</span>
+                                <span class="time">更新时间:{{item.utime | format }}</span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight checkNum" :class="{color1:item.curRed == 1}">{{item.checkNum}}包</span>
+                    </li>
+
+
+
+                    <!-- <li>
+                        <span class="list-table-call list-num">
+                            <img src="no1.png" alt="" class="list-noimg">    
+                        </span>
+                     <span class="list-table-cell list-num">NO.100</span> 
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left"><img src="head-portrait.jpg" alt=""></div>
+                            <div class="times-div left"><span>金天子</span><span class="time">更新时间：2017/5/23 10:12:20</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight">200次</span>
+                    </li>-->
+                    <!-- <li>
+                        <span class="list-table-cell list-num ">NO.3</span>
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left"><img src="head-portrait.jpg" alt=""></div>
+                            <div class="times-div left"><span class="name">金天子金天子金天子金天子金天子金天子金天子金天子金天子金天子</span><span class="time">更新时间：2017/5/23 10:12:20</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight">20次</span>
+                    </li>
+                    <li>
+                        <span class="list-table-cell list-num ">NO.4</span>
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left"><img src="head-portrait.jpg" alt=""></div>
+                            <div class="times-div left"><span class="name">金天子金天子金天子金天子金天子金天子金天子金天子金天子金天子</span><span class="time">更新时间：2017/5/23 10:12:20</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight">20次</span>
+                    </li>
+                    <li>
+                        <span class="list-table-cell list-num ">NO.5</span>
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left"><img src="head-portrait.jpg" alt=""></div>
+                            <div class="times-div left"><span class="name">金天子金天子金天子金天子金天子金天子金天子金天子金天子金天子</span><span class="time">更新时间：2017/5/23 10:12:20</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight">20次</span>
+                    </li> -->
+
+                </ul>
+
+                <!-- 当未开始或是数据为空的时候 -->
+                <div class="fn-mtauto text-center" style="width:60%;" v-if="turnNum==0">
+                    <br/>
+                    <img src="nostart.png" alt="" style="display:inline" width="80%">
+                    <!-- <span>当前活动未开始,敬请期待!</span> -->
+                </div>
+
+                <div class="fn-mtauto text-center" style="width:60%;" v-if="rankList =='' && turnNum !=0">
+                    <br/>
+                    <img src="nodata.png" alt="" style="display:inline" width="80%">
+                    <!-- <span>暂无数据</span> -->
+                </div>
+
+            </div>
+
+            <!--规则-->
+            <!-- <div class="ranking-rule">
+                
+                <p class="rule-title">排行榜规则</p>
+                <div class="rules" v-html="weekRule"></div>
+            </div> -->
+
+            <div class="rankint-btn">
+                <span @click="gotoURL('week-rule')">周冠军活动规则</span>
+                <span @click="gotoURL('week-old')" v-show="turnNum >1">往期回顾</span>
+            </div>
+
+
+        </div>
+        <div class="menuFooter-nav rank-nav" v-cloak>
+            <img src="../draw/prizeFooterBg.png" class="prizeFooterBg" alt="">
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

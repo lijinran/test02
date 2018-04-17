@@ -1,0 +1,118 @@
+<!--
+@require "loading.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>防伪验真</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #fff;
+            -webkit-text-size-adjust: 100%!important;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="main loading-div" :style="{ height: screenH + 'px' }" v-cloak>
+        <div class="topTip" v-if="isShowTip" v-html="showTipTxt">
+
+        </div>
+        <div class="topBox">
+            <div class="picBox" :class="{noll:isShowTip}">
+                <img src="pic01.png" alt="">
+            </div>
+            <div class="input-box">
+                <div class="user-in">
+                    <input type="tel" id="userin" name="" value="" maxlength="6" v-model.trim="captchaNum" v-on:blur="disposeIn">
+                </div>
+                <div class="captcha">
+                    <span v-for="(item,index) in captchaArray" :class='{w10:index ==5,w15:index<5}'>{{item}}</span>
+
+                    <!--<span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                    <span>6</span>-->
+                </div>
+
+                <div class="input-info text-center">
+                    <div v-if="!isErrmsg">
+                        请输入烟包内6位验证码
+                    </div>
+                    <div class="errcolor" v-else>
+                        {{errmsg}}
+                    </div>
+
+                </div>
+                <div class="inputBtn text-center" @click="doCheck">
+                    点击验证
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bottomBox">
+            <div class="qrcode">
+                <img src="qrcode.jpg" alt="">
+            </div>
+            <p class="qrcode-info text-center colorfff">长按识别二维码 关注"天子新语"</p>
+            <div class="info text-center colorfff">
+                本页面含有烟草内容, 未满18岁敬请回避<br> 吸烟有害健康 劝阻青少年吸烟
+            </div>
+            <div class="copyright text-center colorfff">
+                版权所有: 重庆中烟&nbsp;&nbsp; |&nbsp;&nbsp;技术支持: 太和物联
+            </div>
+        </div>
+
+
+        <!-- //TODO 绑定手机号-->
+        <!--<div id="bind-phone">
+            <input type="text" name="" value="" v-model.trim="testT">
+        </div>-->
+
+        <!-- // TODO 填写手机号码 带过渡效果 -->
+        <transition name="popin">
+            <div id="bind-phone" class="bind-phone ui-dialog" v-show="showAddress" style="display:none;z-index: 1000;">
+                <div class="main-wrap">
+                    <div class="main-content">
+                        <h2 class="text-center">首次领取,请先激活手机号码</h2>
+                        <p class="text-center color1">*重庆中烟活动通用</p>
+                        <div class="inputBox input-phone">
+                            <span class="icon pull-left"><img src="phone.png" alt=""></span>
+                            <input type="tel" maxlength="11" placeholder="请输入领取的手机号" class="pull-left">
+                        </div>
+                        <div class="inputBox input-code">
+                            <span class="icon pull-left"><img src="code.png" alt=""></span>
+                            <input type="tel" maxlength="6" placeholder="请输入短信验证码" class="pull-left">
+                            <button class="getcode" @click="getCode" id="getCode">获取验证码</button>
+                        </div>
+                    </div>
+                    <div class="main-footer" @click="doSubmitPopup">
+                        <button type="submit" class="btn">确定</button>
+                    </div>
+                    <div class="main-close">
+                        <img src="close.png" alt="" @click="hidePopup">
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <!-- 蒙版层 -->
+        <transition name="fade">
+            <div class="ui-mask" v-show="showMask"></div>
+        </transition>
+
+    </div>
+</body>
+
+<link rel="import" href="../tpl/footer/footer.html?__inline">
+</body>
+
+</html>

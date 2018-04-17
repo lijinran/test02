@@ -1,0 +1,88 @@
+<!--
+@require "ranking-list.js"
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>排行榜</title>
+    <link rel="import" href="../tpl/header/header.html?__inline">
+</head>
+
+<body>
+    <div id="app" v-cloak class="main draw-content newyearbg changbg" :style="{ height: screenH + 'px' }">
+        <div class="draw-header">
+            <vue-marquee :scroll-win="scrollWin" :time-text="timeText"></vue-marquee>
+            <div class="clearfix"></div>
+        </div>
+        <div class="nullLine">&nbsp;</div>
+        <div class="prizeList" v-cloak>
+            <div class="ranking-title colorfff">金天子{{thisCity}}扫码排行榜</div>
+            <div class="ranking-hint color1">{{rankMsg}}</div>
+            <!--结束以后,并进入到排位,还没有填写地址-->
+            <div class="getting-btn" v-if="isOver && rankFlag && !isGet" @click="goGetAward">点击领取</div>
+            <div class="ranking-list-content">
+                <!--排行榜-->
+                <ul class="">
+                    <li v-for="item in rankList">
+
+                        <span class="list-table-call list-num" v-if="item.rankNo =='NO.1'">
+                                <img src="no1.png" alt="" class="list-noimg">    
+                         </span>
+                        <span class="list-table-call list-num" v-else-if="item.rankNo =='NO.2'">
+                                <img src="no2.png" alt="" class="list-noimg">    
+                         </span>
+                        <span class="list-table-call list-num" v-else-if="item.rankNo =='NO.3'">
+                                <img src="no3.png" alt="" class="list-noimg">    
+                         </span>
+                        <span class="list-table-cell list-num " :class="{color1:item.curRed == 1}" v-else>{{item.rankNo}}</span>
+
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left">
+                                <img :src="item.headImgUrl" alt="头像" v-if="item.headImgUrl !=''">
+                                <img src="../exchange-welfare/default.png" alt="头像" v-else>
+                            </div>
+                            <div class="times-div left"><span class="name">{{item.nickname}}</span><span class="time">更新时间:{{item.utime | format }}</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight checkNum" :class="{color1:item.curRed == 1}">{{item.checkNum}}包</span>
+                    </li>
+
+                    <!--<li>
+                        <span class="list-table-cell list-num">NO.100</span>
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left"><img src="head-portrait.jpg" alt=""></div>
+                            <div class="times-div left"><span>金天子</span><span class="time">更新时间：2017/5/23 10:12:20</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight">200次</span>
+                    </li>
+                    <li>
+                        <span class="list-table-cell list-num ">NO.100</span>
+                        <div class="list-table-cell list-time">
+                            <div class="head-portrait left"><img src="head-portrait.jpg" alt=""></div>
+                            <div class="times-div left"><span class="name">金天子金天子金天子金天子金天子金天子金天子金天子金天子金天子</span><span class="time">更新时间：2017/5/23 10:12:20</span></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <span class="list-table-cell textRight">20次</span>
+                    </li>-->
+                </ul>
+            </div>
+            <div class="ranking-rule">
+                <!--规则-->
+                <p class="rule-title">排行榜规则</p>
+                <div class="rules" v-html="bottomMsg"></div>
+            </div>
+
+        </div>
+        <div class="menuFooter-nav rank-nav" v-cloak>
+            <img src="../draw/prizeFooterBg.png" class="prizeFooterBg" alt="">
+            <vue-navmenu :is-flag="isflag"></vue-navmenu>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

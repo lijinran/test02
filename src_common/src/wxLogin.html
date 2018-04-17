@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>微信登录</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <style>
+        .field-tooltipWrap {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            z-index: 19891014;
+        }
+        
+        .field-tooltipInner {
+            pointer-events: none;
+            display: table;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .field-tooltip {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .field-tooltip .field-invalidmsg,
+        .field-tooltip .field-validmsg {
+            color: #fff;
+        }
+        
+        .field-tooltip .zvalid-resultformat {
+            display: inline-block;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+            pointer-events: auto;
+            animation-name: fieldTipBounceIn;
+            -webkit-animation-name: fieldTipBounceIn;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            -webkit-animation-duration: .18s;
+            animation-duration: .18s;
+        }
+        
+        @-webkit-keyframes fieldTipBounceIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale3d(.3, .3, .3);
+                transform: scale3d(.3, .3, .3);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
+        
+        .loading {
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 152px;
+            height: 62px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loading">
+        <img src="loading.gif" alt="">
+        <br/>正在获取定位...
+    </div>
+
+    <div id="message"></div>
+    <script src="config.js?v=2017"></script>
+    <script>
+        //隐藏微信右上角的分享  
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+            //通过下面这个API显示右上角按钮
+            WeixinJSBridge.call('hideOptionMenu');
+        });
+
+        // 创建 XHR请求
+        function createXHR() {
+            if (window.XMLHttpRequest) { //IE7+、Firefox、Opera、Chrome 和Safari
+                return new XMLHttpRequest();
+            } else if (window.ActiveXObject) { //IE6 及以下
+                var versions = ['MSXML2.XMLHttp', 'Microsoft.XMLHTTP'];
+                for (var i = 0, len = versions.length; i < len; i++) {
+                    try {
+                        return new ActiveXObject(version[i]);
+                        break;
+                    } catch (e) {
+                        //跳过
+                    }
+                }
+            } else {
+                throw new Error('浏览器不支持XHR对象！');
+            }
+        }
+
+
+        //封装ajax，参数为一个对象
+        function pajax(obj) {
+            var xhr = createXHR(); //创建XHR对象
+            //通过使用JS随机字符串解决IE浏览器第二次默认获取缓存的问题
+            obj.url = obj.url + '?rand=' + Math.random();
+            obj.data = params(obj.data); //通过params()将名值对转换成字符串
+            //若是GET请求，则将数据加到url后面
+            if (obj.method === 'get') {
+                obj.url += obj.url.indexOf('?') == -1 ? '?' + obj.data : '&' + obj.data;
+            }
+            if (obj.async === true) { //true表示异步，false表示同步
+                //使用异步调用的时候，需要触发readystatechange 事件
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) { //判断对象的状态是否交互完成
+                        callback(); //回调
+                    }
+                };
+            }
+            //在使用XHR对象时，必须先调用open()方法，
+            //它接受三个参数：请求类型(get、post)、请求的URL和表示是否异步。
+            xhr.open(obj.method, obj.url, obj.async);
+            if (obj.method === 'post') {
+                //post方式需要自己设置http的请求头，来模仿表单提交。
+                //放在open方法之后，send方法之前。
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(obj.data); //post方式将数据放在send()方法里
+            } else {
+                xhr.send(null); //get方式则填null
+            }
+            if (obj.async === false) { //同步
+                callback();
+            }
+
+            function callback() {
+                if (xhr.status == 200) { //判断http的交互是否成功，200表示成功
+                    obj.success(JSON.parse(xhr.responseText)); //回调传递参数
+                } else {
+                    obj.fail(JSON.parse(xhr.responseText))
+                        // console.log('获取数据错误！错误代号：' + xhr.status + '，错误信息：' + xhr.statusText);
+                }
+            }
+        }
+        //名值对转换为字符串
+        function params(data) {
+            var arr = [];
+            for (var i in data) {
+                //特殊字符传参产生的问题可以使用encodeURIComponent()进行编码处理
+                arr.push(encodeURIComponent(i) + '=' + encodeURIComponent(data[i]));
+            }
+            return arr.join('&');
+        }
+
+        // 获取URL上参数
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return (r[2]);
+            return '';
+        }
+        // 弹窗提示
+        function getMessage(text) {
+            var message = document.getElementById('message'),
+                container =
+                '<div class="field-tooltipWrap"><div class="field-tooltipInner"><div class="field-tooltip fieldTipBounceIn"><div class="zvalid-resultformat">' +
+                text + '</div></div></div></div>';
+            message.innerHTML = container;
+            setTimeout(function() {
+                message.innerHTML = '';
+            }, 1500)
+        }
+
+        // 请求地址
+        var host = config.HOST; //(location.origin || (location.protocol + '//' + location.hostname))
+        var wxuserInfo = "/cloud2.member.api/wx/userInfoSC.do"; // 获取用户信息的
+        var wxLogin = "/cloud2.member.api/member/userInfo/wxLogin.do"; // 微信登录
+        var getSignatureUrl = "/cloud2.member.api/wx/jsSignature.do";
+        var codeScan = "/cloud2.barcode.api/order/info/cqQueryOrderInfo.do";
+        var getInfo = "/cloud2.member.api/member/userInfo/getCurLoginUser.do";
+        var scCheck = "/cloud2.barcode.api/barcode/orderCheck/cqCheck.do"; // 验真接口
+        var loddproject = window.localStorage.getItem('project') || "_jtz201804_"; // 扫码后已经存储了
+        // var barData = window.sessionStorage.getItem(loddproject + 'barcodeData');
+        var wxcode = getQueryString('code'); //微信回调的code
+
+
+        // var jssdk = JSON.parse(window.localStorage.getItem('jssdk')) || 0; // 
+
+
+        var latitude = "",
+            longitude = "",
+            WXINFO;
+
+        var userToken = window.localStorage.getItem(loddproject + 'wxLogin');
+
+        userToken && (userToken = JSON.parse(userToken));
+        userToken = userToken && userToken.userToken;
+
+        barData = window.sessionStorage.getItem('barcode');
+        if (!barData) {
+            getMessage("请重新扫码");
+        }
+
+        var from = getQueryString('from');
+
+
+        if (wxcode || from) {
+            getSign();
+        } else {
+            getMessage("微信授权参数不正确")
+        }
+
+        // 取微信 js sdk
+        function getSign() {
+            pajax({
+                url: host + getSignatureUrl,
+                method: 'get',
+                data: {
+                    url: window.location.href
+                },
+                success: function(data) {
+                    var edata = data.data;
+                    // 存储
+                    // window.localStorage.setItem("jssdk", JSON.stringify(edata));
+                    if (data.code == 200) {
+                        wx.config({
+                            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                            appId: config.wappId, // 必填，公众号的唯一标识
+                            timestamp: edata.timestamp, // 必填，生成签名的时间戳
+                            nonceStr: edata.nonceStr, // 必填，生成签名的随机串
+                            signature: edata.signature, // 必填，签名，见附录1
+                            jsApiList: ["getLocation"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                        });
+                        wx.ready(function() {
+                            wx.getLocation({
+                                type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                                complete: function(res) {
+                                    latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                                    longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。 
+
+                                    // 如果不为空
+                                    if (latitude && longitude) {
+                                        latitude = nEncrypt(res.latitude + "")
+                                        longitude = nEncrypt(res.longitude + "")
+                                    }
+
+                                    if (from) {
+                                        barcodeScan()
+                                    } else {
+                                        wxinfo()
+                                    }
+                                },
+                                fail: function() {
+                                    if (from) {
+                                        barcodeScan()
+                                    } else {
+                                        wxinfo()
+                                    }
+                                },
+                                cancel: function(res) {
+                                    // console.log(res)
+                                    if (from) {
+                                        barcodeScan()
+                                    } else {
+                                        wxinfo()
+                                    }
+                                }
+                            });
+
+
+                        })
+
+
+
+                    } else {
+                        // 授权失败
+
+                    }
+
+
+
+
+                },
+                fail: function(data) {
+                    getMessage("网络错误");
+                },
+                async: true
+            })
+        }
+        // 获取用户信息
+        function getUserInfo(useinfo, bar, aurl) {
+            pajax({
+                url: host + getInfo,
+                async: true,
+                method: 'post',
+                data: {
+                    userToken: userToken
+                },
+                success: function(data) {
+                    if (data.code == 200) {
+
+                        if (bar.barcode == config.publicCode && aurl == "jtz_noactivity") {
+                            // getMessage("您不在活动区域")
+                            window.location.href = "./noactivity.html"
+                        } else if (bar.barcode == config.publicCode) {
+                            checkBarcode(useinfo, bar)
+                        } else {
+                            window.location.href = aurl + '/loading.html';
+                        }
+
+                    } else if (data.code == 601) {
+                        wxDologin(useinfo, bar)
+                    }
+                }
+
+            })
+        }
+
+        // 扫码
+        function barcodeScan() {
+            pajax({
+                url: host + codeScan,
+                method: 'post',
+                data: {
+                    barcode: barData,
+                    lng: longitude || "",
+                    lat: latitude || "",
+                    userToken: userToken
+                },
+                success: function(result) {
+                    if (isObject(result) && result.code == 200 && result.data && 'object' === typeof(
+                            result.data)) {
+                        //先判断应用状态 3102表示正在运行中
+
+                        var status = result.data.status;
+                        // 条盒 直接跳转网页
+                        if (result.data.style != 2) {
+                            window.location.href = "http://qr.cncqti.com/formal/jtzupdate.html"
+                            return false
+                        }
+
+                        // result.data.resource = 'jtz_chongqing' // 测试用
+                        // debugger
+                        if (3102 != status && 1001 != status) {
+                            jumpAppTip(result.data.status, result.data.resource || 'xlongyun');
+                            return;
+                        }
+                        //本地存储支持情况
+                        if (window.sessionStorage) {
+                            if (result.data.isLogin == 0) {
+                                window.localStorage.removeItem(result.data.resource + 'wxLogin');
+                            }
+                            WXINFO = window.localStorage.getItem(loddproject + "wxInfo");
+                            loddproject = result.data.resource; //重置前缀
+
+
+                            window.localStorage.setItem("project", result.data.resource);
+                            window.localStorage.setItem(result.data.resource + "wxInfo", WXINFO);
+                            window.sessionStorage.setItem(result.data.resource + "barcodeData", JSON.stringify(
+                                result.data));
+
+                        } else {
+                            // setItems(result.data, 'cookie', true);
+                        }
+                        //模板是否存在
+                        if (result.data.resource && '' !== result.data.resource) {
+
+                            if (from) {
+                                // window.location.href = result.data.resource + '/loading.html'; // + params;
+                                // return false;
+                                // 检测是否登录
+                                var INFO = JSON.parse(WXINFO);
+                                getUserInfo(INFO, result.data, result.data.resource)
+                                return false;
+                            } else {
+                                var INFO = JSON.parse(WXINFO);
+                                wxDologin(INFO, result.data)
+                            }
+
+                        } else {
+                            getMessage('未找到应用对应的模板');
+                        }
+                    } else if (isObject(result) && result.code == 1001 && result.data) {
+                        //判断码状态（是否已激活）
+                        if (result.data.resource) {
+                            getMessage('码状态已激活');
+
+                        } else {
+                            getMessage('码状态未激活');
+                        }
+                    }else if (isObject(result) && (result.code == 3101||result.code == 3103||result.code == 3104)) {
+                        window.location.href = "http://qt.cncqti.com/formal/update.html"
+                        return false
+                    } else {
+
+                        getMessage(result.msg);
+                    }
+
+                },
+                fail: function(data) {
+                    getMessage("网络错误");
+                },
+                async: true
+
+            })
+
+
+
+        }
+
+
+        // 默认验真
+        function checkBarcode(useinfo, bar) {
+            pajax({
+                url: host + scCheck,
+                async: true,
+                method: 'post',
+                data: {
+                    barcode: bar.barcode,
+                    pwd: config.pwd, // 
+                    appId: bar.appId,
+                    id: bar.id,
+                    province: bar.province,
+                    city: bar.city,
+                    area: bar.area,
+                    userToken: userToken,
+                    relationId: bar.product_id,
+                    comId: bar.comId,
+                    ip: bar.ip
+                },
+                success: function(data) {
+                    if (data.code == 200) {
+
+                        window.localStorage.setItem(bar.resource + "giftId", data.data.cq_gift_id);
+
+                        window.location.href = bar.resource + '/ucenter.html';
+
+                    } else if (data.code == 601) {
+                        wxDologin(useinfo, bar)
+                    }
+                }
+
+            })
+
+        }
+        //是否为对象
+        function isObject(val) {
+            return '[object Object]' == toString.call(val);
+        }
+        // 查询用户信息
+        function wxinfo() {
+            pajax({
+                url: host + wxuserInfo,
+                method: 'get',
+                data: {
+                    code: wxcode
+                },
+                success: function(data) {
+                    if (data.code == 200) {
+                        window.localStorage.setItem(loddproject + "wxInfo", JSON.stringify(data.data))
+                        barcodeScan()
+                            // data.data ? wxDologin(data.data) : getMessage("没有用户信息");
+                    } else {
+                        data.msg && getMessage(data.msg);
+                    }
+                },
+                fail: function(data) {
+                    getMessage("网络错误");
+                },
+                async: true
+
+            })
+        }
+
+
+        // 用户登录
+        function wxDologin(wxinfo, bar) {
+
+            pajax({
+                url: host + wxLogin,
+                method: 'post',
+                data: {
+                    openId: wxinfo.openid,
+                    comId: bar.comId,
+                    nickname: wxinfo.nickname,
+                    sex: wxinfo.sex,
+                    accessToken: wxinfo.access_token,
+                    refreshToken: wxinfo.refresh_token,
+                    headImgUrl: wxinfo.headimgurl,
+                    province: wxinfo.province,
+                    city: wxinfo.city,
+                    unionId: wxinfo.unionid,
+                    materialsId: bar.product_id,
+                    provinceUser: bar.province,
+                    cityUser: bar.city,
+                    barcode: bar.barcode
+                },
+                success: function(data) {
+
+                    if (data.code == 200) {
+                        window.localStorage.setItem(loddproject + "wxLogin", JSON.stringify(data.data))
+
+
+                        // window.location.href = loddproject + '/loading.html'; // + params;
+
+                        if (bar.barcode == config.publicCode && bar.resource == "jtz_noactivity") {
+                            // getMessage("您不在活动区域")
+                            window.location.href = "./noactivity.html"
+                        } else if (bar.barcode == config.publicCode) {
+                            checkBarcode(wxinfo, bar)
+                        } else {
+                            window.location.href = bar.resource + '/loading.html';
+                        }
+
+                        return false;
+                    } else {
+                        data.msg && getMessage(data.msg);
+                    }
+
+                },
+                fail: function(data) {
+                    getMessage("网络错误");
+                },
+                async: true
+
+            })
+
+
+        }
+
+
+        function jumpAppTip(status, resource) {
+            window.location.href = resource + '/application.html?status=' + status;
+            return false;
+        }
+
+
+        // Encrypt
+        var char = 'diogoxiang20170413'; //KEY
+        var pre = '0x' //固定两个字符串
+
+        function getRandom(n) {
+            var res = "";
+            var chars = [];
+            chars = char.split("")
+            for (var i = 0; i < n; i++) {
+                var id = Math.ceil(Math.random() * (char.length - 1));
+                res += pre + chars[id];
+            }
+            return res;
+        }
+        /**
+         * @desc nEncode16
+         * 
+         * @param {any} str 
+         * @returns 
+         */
+        function nEncode16(str) {
+            str = str.toLowerCase();
+            if (str.match(/^[-+]?\d*$/) == null) { //非整数字符，对每一个字符都转换成16进制，然后拼接
+                var s = str.split("");
+                var temp = "";
+                for (var i = 0; i < s.length; i++) {
+                    s[i] = s[i].charCodeAt(); //先转换成Unicode编码
+                    s[i] = s[i].toString(16);
+                    temp = temp + pre + s[i];
+                }
+                return temp + "{" + 1; //1代表字符
+            } else { //数字直接转换成16进制
+                str = parseInt(str).toString(16);
+            }
+            return str + "{" + 0; //0代表纯数字
+        }
+
+        /**
+         * 
+         * @desc new 加密 
+         * @param {any} str 
+         * @returns 
+         */
+        function nEncrypt(str) {
+            var encryptStr = ""; //最终返回的加密后的字符串
+            encryptStr += getRandom(2); //产生3位随机数
+
+            var temp = nEncode16(str).split("{"); //对要加密的字符转换成16进制
+            var numLength = temp[0].length; //转换后的字符长度
+            numLength = numLength.toString(16); //字符长度换算成16进制
+            if (numLength.length == 1) { //如果是1，补一个0
+                numLength = "0" + numLength;
+            } else if (numLength.length > 2) { //转换后的16进制字符长度如果大于2位数，则返回，不支持
+                return "";
+            }
+            encryptStr += numLength;
+
+            if (temp[1] == "0") {
+                encryptStr += 0;
+            } else if (temp[1] == "1") {
+                encryptStr += 1;
+            }
+
+            encryptStr += temp[0];
+
+            if (encryptStr.length < 20) { //如果小于20位，补上随机数
+                var ran = getRandom(20 - encryptStr.length);
+                encryptStr += ran;
+            }
+            return encryptStr;
+        }
+    </script>
+
+
+</body>
+
+</html>

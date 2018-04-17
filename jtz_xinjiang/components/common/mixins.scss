@@ -1,0 +1,30 @@
+@charset "utf-8";
+$grid-columns: 12;
+$grid-gutter-width: 30px;
+$grid-float-breakpoint: 768px;
+$main-width:100%;
+$color1: #FBCA88;
+$newcolor1: #F30E09;
+$err:#CA0823;
+$bgcolor:#F9E07C;
+$newbgcolor:#F0C483;
+$newredgcolor:#FA0405;
+//font color
+$color2:#FAF9F9;
+$txtColor:#665d56;
+$titColor:#cf3131;
+// pixels to rems
+@function pxToRem($px) {
+    @return $px / 20 * 1rem;
+}
+
+%keepline {
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+%radius8 {
+    border-radius: 8px;
+}
